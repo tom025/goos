@@ -7,6 +7,7 @@ require 'org/hamcrest/hamcrest-all-SNAPSHOT.jar'
 require 'rspec'
 require 'rspec/given'
 
+
 module Smack
   include_package 'org/jivesoftware/smack'
   java_import org.jivesoftware.smack.XMPPConnection
@@ -16,13 +17,19 @@ module WindowLicker
   include_package 'com/objogate/wl'
   include_package 'com/objogate/wl/swing'
   java_import com.objogate.wl.swing.driver.JFrameDriver
+  java_import com.objogate.wl.swing.driver.JLabelDriver
   java_import com.objogate.wl.swing.gesture.GesturePerformer
   java_import com.objogate.wl.swing.AWTEventQueueProber
+end
+
+module Hamcrest
+  java_import org.hamcrest.Matchers
 end
 
 module AuctionSniper
   MAIN_WINDOW_NAME = 'Auction Sniper'
   STATUS_JOINING = 'joining'
+  SNIPER_STATUS_NAME = 'status'
   def self.start(hostname, sniper_id, password, auction_item_id)
   end
 end
@@ -62,11 +69,30 @@ class ApplicationRunner
   end
 
   class AuctionSniperDriver < WindowLicker::JFrameDriver
+
     def self.with_timeout(timeout)
-      top_level_driver = WindowLicker::JFrameDriver.top_level_frame(named(AuctionSniper::MAIN_WINDOW_NAME), showing_on_screen)
+      top_level_driver = WindowLicker::JFrameDriver.top_level_frame(
+        named(AuctionSniper::MAIN_WINDOW_NAME), showing_on_screen)
       gesture_performer = WindowLicker::GesturePerformer.new
       event_queue_probe = WindowLicker::AWTEventQueueProber.new(timeout, 100)
       new(gesture_performer, top_level_driver, event_queue_probe)
+    end
+
+    def shows_sniper_status(text)
+      WindowLicker::JLabelDriver.new(
+        self, named(AuctionSniper::SNIPER_STATUS_NAME)).has_text(equal_to(text))
+    end
+
+    def named(*args)
+      self.class.named(*args)
+    end
+
+    def method_missing(method_name, *args, &block)
+      begin
+        Hamcrest::Matchers.send(method_name, *args)
+      rescue NoMethodError
+        super
+      end
     end
   end
 end
