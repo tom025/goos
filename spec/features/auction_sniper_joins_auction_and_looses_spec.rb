@@ -9,7 +9,10 @@ module Smack
   java_import org.jivesoftware.smack.XMPPConnection
 end
 
-module AuctionSniper; end
+module AuctionSniper
+  def self.start(hostname, sniper_id, password, auction_item_id)
+  end
+end
 
 class FakeAuctionServer
   ITEM_ID_AS_LOGIN = 'auction-%s'
@@ -31,7 +34,18 @@ class FakeAuctionServer
 end
 
 class ApplicationRunner
+  XMPP_HOSTNAME = 'localhost'
   def start_bidding_in(auction)
+    Thread.new("Test Application") do
+      begin
+        AuctionSniper.start(XMPP_HOSTNAME, SNIPER_ID, SNIPER_PASSWORD, auction.item_id)
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace
+      end
+    end
+    @driver = AuctionSniperDriver.new(1000)
+    @driver.shows_sniper_status(STATUS_JOINING)
   end
 end
 
