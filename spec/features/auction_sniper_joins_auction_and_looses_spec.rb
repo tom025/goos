@@ -1,6 +1,9 @@
 require 'java'
 require 'org/smack/smack.jar'
 require 'org/smack/smackx.jar'
+require 'org/window_licker/windowlicker-swing-DEV.jar'
+require 'org/window_licker/windowlicker-core-DEV.jar'
+require 'org/hamcrest/hamcrest-all-SNAPSHOT.jar'
 require 'rspec'
 require 'rspec/given'
 
@@ -9,7 +12,17 @@ module Smack
   java_import org.jivesoftware.smack.XMPPConnection
 end
 
+module WindowLicker
+  include_package 'com/objogate/wl'
+  include_package 'com/objogate/wl/swing'
+  java_import com.objogate.wl.swing.driver.JFrameDriver
+  java_import com.objogate.wl.swing.gesture.GesturePerformer
+  java_import com.objogate.wl.swing.AWTEventQueueProber
+end
+
 module AuctionSniper
+  MAIN_WINDOW_NAME = 'Auction Sniper'
+  STATUS_JOINING = 'joining'
   def self.start(hostname, sniper_id, password, auction_item_id)
   end
 end
@@ -44,8 +57,17 @@ class ApplicationRunner
         puts e.backtrace
       end
     end
-    @driver = AuctionSniperDriver.new(1000)
-    @driver.shows_sniper_status(STATUS_JOINING)
+    @driver = AuctionSniperDriver.with_timeout(1000)
+    @driver.shows_sniper_status(AuctionSniper::STATUS_JOINING)
+  end
+
+  class AuctionSniperDriver < WindowLicker::JFrameDriver
+    def self.with_timeout(timeout)
+      top_level_driver = WindowLicker::JFrameDriver.top_level_frame(named(AuctionSniper::MAIN_WINDOW_NAME), showing_on_screen)
+      gesture_performer = WindowLicker::GesturePerformer.new
+      event_queue_probe = WindowLicker::AWTEventQueueProber.new(timeout, 100)
+      new(gesture_performer, top_level_driver, event_queue_probe)
+    end
   end
 end
 
