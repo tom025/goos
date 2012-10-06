@@ -40,10 +40,12 @@ class FakeAuctionServer
   AUCTION_PASSWORD = 'auction'
   AUCTION_RESOURCE = 'Auction'
 
+  attr_accessor :current_chat, :message_listener
+
   def initialize(item_id)
     @item_id = item_id
     @connection = Smack::XMPPConnection.new(XMPP_HOSTNAME)
-    
+    @message_listener = SingleMessageListener.new
   end
 
   def start_selling_item
@@ -51,12 +53,22 @@ class FakeAuctionServer
     @connection.login(ITEM_ID_AS_LOGIN % @item_id,
                       AUCTION_PASSWORD,
                       AUCTION_RESOURCE)
-    @connection.get_chat_manager.add_chat_listener(ChatManagerListener.new)
+    @connection.get_chat_manager.add_chat_listener(ChatManagerListener.new(self))
   end
 
   class ChatManagerListener
-    def create_chat(chat, created_locally)
+    def initialize(chat_observer)
+      @chat_observer = chat_observer
     end
+
+    def create_chat(chat, created_locally)
+      @chat_observer.current_chat = chat
+      chat.add_message_listener(@chat_observer.message_listener)
+    end
+  end
+
+  class SingleMessageListener
+
   end
 end
 
