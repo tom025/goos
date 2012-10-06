@@ -26,12 +26,35 @@ module Hamcrest
   java_import org.hamcrest.Matchers
 end
 
+module Swing
+  java_import javax.swing.SwingUtilities
+  java_import javax.swing.JFrame
+end
+
 module AuctionSniper
   MAIN_WINDOW_NAME = 'Auction Sniper'
   STATUS_JOINING = 'joining'
   SNIPER_STATUS_NAME = 'status'
+
   def self.start(hostname, sniper_id, password, auction_item_id)
+    start_user_interface
   end
+
+  private
+  def self.start_user_interface
+    Swing::SwingUtilities.invoke_and_wait(Proc.new { MainWindow.new })
+  end
+
+  class MainWindow < Swing::JFrame
+    def initialize
+      puts 'here'
+      super("Auction Sniper")
+      set_name(MAIN_WINDOW_NAME)
+      set_default_close_operation(Swing::JFrame::EXIT_ON_CLOSE)
+      set_visible(true)
+    end
+  end
+
 end
 
 class FakeAuctionServer
@@ -40,7 +63,7 @@ class FakeAuctionServer
   AUCTION_PASSWORD = 'auction'
   AUCTION_RESOURCE = 'Auction'
 
-  attr_accessor :current_chat, :message_listener
+  attr_accessor :current_chat, :message_listener, :item_id
 
   def initialize(item_id)
     @item_id = item_id
@@ -54,6 +77,10 @@ class FakeAuctionServer
                       AUCTION_PASSWORD,
                       AUCTION_RESOURCE)
     @connection.get_chat_manager.add_chat_listener(ChatManagerListener.new(self))
+  end
+
+  def stop
+    @connection.disconnect
   end
 
   class ChatManagerListener
@@ -74,6 +101,9 @@ end
 
 class ApplicationRunner
   XMPP_HOSTNAME = 'localhost'
+  SNIPER_ID = 'sniper'
+  SNIPER_PASSWORD = 'sniper'
+
   def start_bidding_in(auction)
     Thread.new("Test Application") do
       begin
@@ -85,6 +115,10 @@ class ApplicationRunner
     end
     @driver = AuctionSniperDriver.with_timeout(1000)
     @driver.shows_sniper_status(AuctionSniper::STATUS_JOINING)
+  end
+
+  def stop
+    @driver.dispose if @driver
   end
 
   class AuctionSniperDriver < WindowLicker::JFrameDriver
