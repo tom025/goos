@@ -1,11 +1,8 @@
 require 'java'
 require 'lib/window_licker'
+require 'lib/hamcrest'
 require 'rspec'
 require 'rspec/given'
-
-module Hamcrest
-  java_import org.hamcrest.Matchers
-end
 
 module Swing
   java_import javax.swing.SwingUtilities
