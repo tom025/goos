@@ -18,9 +18,12 @@ class FakeAuctionServer
   def start_selling_item
     @connection.connect
     @connection.login(ITEM_ID_AS_LOGIN % @item_id,
-                     AUCTION_PASSWORD,
-                     AUCTION_RESOURCE)
-    @connection.get_chat_manager.add_chat_listener(ChatManagerListener.new(self))
+                      AUCTION_PASSWORD,
+                      AUCTION_RESOURCE)
+    @connection.get_chat_manager.add_chat_listener do |chat, created_locally|
+      @current_chat = chat
+      chat.add_message_listener(@message_listener)
+    end
   end
 
   def has_received_join_request_from_sniper
@@ -33,17 +36,5 @@ class FakeAuctionServer
 
   def stop
     @connection.disconnect
-  end
-
-  #Maybe this could be implemented as a block?
-  class ChatManagerListener
-    def initialize(chat_observer)
-      @chat_observer = chat_observer
-    end
-
-    def chat_created(chat, created_locally)
-      @chat_observer.current_chat = chat
-      chat.add_message_listener(@chat_observer.message_listener)
-    end
   end
 end
