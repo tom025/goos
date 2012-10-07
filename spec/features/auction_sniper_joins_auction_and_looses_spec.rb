@@ -11,6 +11,7 @@ require 'rspec/given'
 module Smack
   include_package 'org/jivesoftware/smack'
   java_import org.jivesoftware.smack.XMPPConnection
+  java_import org.jivesoftware.smack.packet.Message
 end
 
 module WindowLicker
@@ -46,14 +47,33 @@ module AuctionSniper
   MAIN_WINDOW_NAME = 'Auction Sniper'
   STATUS_JOINING = 'joining'
   SNIPER_STATUS_NAME = 'status'
+  AUCTION_RESOURCE = 'Auction'
+  ITEM_ID_AS_LOGIN = 'auction-%s'
+  AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + '@%s/' + AUCTION_RESOURCE
 
-  def self.start(hostname, sniper_id, password, auction_item_id)
+  def self.start(hostname, sniper_id, password, item_id)
     start_user_interface
+    connection = connect_to(hostname, sniper_id, password)
+    chat = connection.get_chat_manager.create_chat(auction_id(item_id, connection)) do |a_chat, message|
+      # nothing yet
+    end
+    chat.send_message(Smack::Message.new)
   end
 
   private
+  def self.auction_id(item_id, connection)
+    AUCTION_ID_FORMAT % [item_id, connection.get_service_name]
+  end
+
   def self.start_user_interface
     Swing::SwingUtilities.invoke_and_wait(Proc.new { MainWindow.new })
+  end
+
+  def self.connect_to(hostname, username, password)
+    connection = Smack::XMPPConnection.new(hostname)
+    connection.connect
+    connection.login(username, password, AUCTION_RESOURCE)
+    connection
   end
 
   class MainWindow < Swing::JFrame
@@ -107,7 +127,7 @@ class FakeAuctionServer
   end
 
   def announce_closed
-    current_chat.send_message(Message.new)
+    current_chat.send_message(Smack::Message.new)
   end
 
   def stop
@@ -119,7 +139,7 @@ class FakeAuctionServer
       @chat_observer = chat_observer
     end
 
-    def create_chat(chat, created_locally)
+    def chat_created(chat, created_locally)
       @chat_observer.current_chat = chat
       chat.add_message_listener(@chat_observer.message_listener)
     end
@@ -130,6 +150,10 @@ class FakeAuctionServer
 
     def initialize
       @messages = JConcurrent::ArrayBlockingQueue.new(1)
+    end
+
+    def process_message(chat, message)
+      @messages.add(message)
     end
 
     def receives_a_message
