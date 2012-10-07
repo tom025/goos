@@ -1,4 +1,5 @@
 require 'lib/smack'
+require 'fake_auction_server/single_message_listener'
 
 class FakeAuctionServer
   ITEM_ID_AS_LOGIN = 'auction-%s'
@@ -34,6 +35,7 @@ class FakeAuctionServer
     @connection.disconnect
   end
 
+  #Maybe this could be implemented as a block?
   class ChatManagerListener
     def initialize(chat_observer)
       @chat_observer = chat_observer
@@ -43,22 +45,5 @@ class FakeAuctionServer
       @chat_observer.current_chat = chat
       chat.add_message_listener(@chat_observer.message_listener)
     end
-  end
-
-  class SingleMessageListener
-    include RSpec::Matchers
-
-    def initialize
-      @messages = JConcurrent::ArrayBlockingQueue.new(1)
-    end
-
-    def process_message(chat, message)
-      @messages.add(message)
-    end
-
-    def receives_a_message
-      @messages.poll(5, JConcurrent::TimeUnit::SECONDS).should_not be_nil
-    end
-
   end
 end
