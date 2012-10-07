@@ -1,3 +1,4 @@
+require 'java'
 require 'org/hamcrest/hamcrest-all-SNAPSHOT.jar'
 require 'org/window_licker/windowlicker-swing-DEV.jar'
 require 'org/window_licker/windowlicker-core-DEV.jar'
