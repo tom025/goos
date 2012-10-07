@@ -14,7 +14,8 @@ class ApplicationRunner
 
     def shows_sniper_status(text)
       WindowLicker::JLabelDriver.new(
-        self, named(AuctionSniper::SNIPER_STATUS_NAME)).has_text(equal_to(text))
+        self, named(AuctionSniper::MainWindow::SNIPER_STATUS_NAME)).
+          has_text(equal_to(text))
     end
 
     def named(*args)
