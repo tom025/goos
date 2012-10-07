@@ -1,18 +1,9 @@
 require 'java'
-require 'org/smack/smack.jar'
-require 'org/smack/smackx.jar'
 require 'org/window_licker/windowlicker-swing-DEV.jar'
 require 'org/window_licker/windowlicker-core-DEV.jar'
 require 'org/hamcrest/hamcrest-all-SNAPSHOT.jar'
 require 'rspec'
 require 'rspec/given'
-
-
-module Smack
-  include_package 'org/jivesoftware/smack'
-  java_import org.jivesoftware.smack.XMPPConnection
-  java_import org.jivesoftware.smack.packet.Message
-end
 
 module WindowLicker
   include_package 'com/objogate/wl'
