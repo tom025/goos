@@ -29,6 +29,12 @@ end
 module Swing
   java_import javax.swing.SwingUtilities
   java_import javax.swing.JFrame
+  java_import javax.swing.JLabel
+  java_import javax.swing.border.LineBorder
+end
+
+module AWT
+  java_import java.awt.Color
 end
 
 module AuctionSniper
@@ -46,12 +52,24 @@ module AuctionSniper
   end
 
   class MainWindow < Swing::JFrame
+    attr_accessor :sniper_status
+
     def initialize
-      puts 'here'
       super("Auction Sniper")
+      @sniper_status = create_label(STATUS_JOINING)
       set_name(MAIN_WINDOW_NAME)
+      add(sniper_status)
+      pack
       set_default_close_operation(Swing::JFrame::EXIT_ON_CLOSE)
       set_visible(true)
+    end
+
+    private
+    def create_label(initial_text)
+      label = Swing::JLabel.new(initial_text)
+      label.set_name(SNIPER_STATUS_NAME)
+      label.set_border(Swing::LineBorder.new(AWT::Color::BLACK))
+      label
     end
   end
 
