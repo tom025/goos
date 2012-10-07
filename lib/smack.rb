@@ -1,3 +1,4 @@
+require 'java'
 require 'org/smack/smack.jar'
 require 'org/smack/smackx.jar'
 

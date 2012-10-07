@@ -81,60 +81,6 @@ module AuctionSniper
   end
 end
 
-class ApplicationRunner
-  XMPP_HOSTNAME = 'localhost'
-  SNIPER_ID = 'sniper'
-  SNIPER_PASSWORD = 'sniper'
-
-  def start_bidding_in(auction)
-    Thread.new("Test Application") do
-      begin
-        AuctionSniper.start(XMPP_HOSTNAME, SNIPER_ID, SNIPER_PASSWORD, auction.item_id)
-      rescue Exception => e
-        puts e.message
-        puts e.backtrace
-      end
-    end
-    @driver = AuctionSniperDriver.with_timeout(1000)
-    @driver.shows_sniper_status(AuctionSniper::MainWindow::STATUS_JOINING)
-  end
-
-  def shows_sniper_has_lost_auction
-    @driver.shows_sniper_status(AuctionSniper::MainWindow::STATUS_LOST)
-  end
-
-  def stop
-    @driver.dispose if @driver
-  end
-
-  class AuctionSniperDriver < WindowLicker::JFrameDriver
-
-    def self.with_timeout(timeout)
-      top_level_driver = WindowLicker::JFrameDriver.top_level_frame(
-        named(AuctionSniper::MAIN_WINDOW_NAME), showing_on_screen)
-      gesture_performer = WindowLicker::GesturePerformer.new
-      event_queue_probe = WindowLicker::AWTEventQueueProber.new(timeout, 100)
-      new(gesture_performer, top_level_driver, event_queue_probe)
-    end
-
-    def shows_sniper_status(text)
-      WindowLicker::JLabelDriver.new(
-        self, named(AuctionSniper::SNIPER_STATUS_NAME)).has_text(equal_to(text))
-    end
-
-    def named(*args)
-      self.class.named(*args)
-    end
-
-    def method_missing(method_name, *args, &block)
-      begin
-        Hamcrest::Matchers.send(method_name, *args)
-      rescue NoMethodError
-        super
-      end
-    end
-  end
-end
 
 describe AuctionSniper do
   after do
