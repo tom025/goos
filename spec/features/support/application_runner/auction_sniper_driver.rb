@@ -6,7 +6,7 @@ class ApplicationRunner
 
     def self.with_timeout(timeout)
       top_level_driver = WindowLicker::JFrameDriver.top_level_frame(
-        named(AuctionSniper::MAIN_WINDOW_NAME), showing_on_screen)
+        named(AuctionSniper::MainWindow::MAIN_WINDOW_NAME), showing_on_screen)
       gesture_performer = WindowLicker::GesturePerformer.new
       event_queue_probe = WindowLicker::AWTEventQueueProber.new(timeout, 100)
       new(gesture_performer, top_level_driver, event_queue_probe)
