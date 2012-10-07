@@ -46,6 +46,7 @@ end
 module AuctionSniper
   MAIN_WINDOW_NAME = 'Auction Sniper'
   STATUS_JOINING = 'joining'
+  STATUS_LOST = 'lost'
   SNIPER_STATUS_NAME = 'status'
   AUCTION_RESOURCE = 'Auction'
   ITEM_ID_AS_LOGIN = 'auction-%s'
@@ -179,6 +180,10 @@ class ApplicationRunner
     end
     @driver = AuctionSniperDriver.with_timeout(1000)
     @driver.shows_sniper_status(AuctionSniper::STATUS_JOINING)
+  end
+
+  def shows_sniper_has_lost_auction
+    @driver.shows_sniper_status(AuctionSniper::STATUS_LOST)
   end
 
   def stop
