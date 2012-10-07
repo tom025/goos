@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'lib/smack'
+require 'lib/swing'
 
 module AuctionSniper
   MAIN_WINDOW_NAME = 'Auction Sniper'

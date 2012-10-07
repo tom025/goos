@@ -4,13 +4,6 @@ require 'lib/hamcrest'
 require 'rspec'
 require 'rspec/given'
 
-module Swing
-  java_import javax.swing.SwingUtilities
-  java_import javax.swing.JFrame
-  java_import javax.swing.JLabel
-  java_import javax.swing.border.LineBorder
-end
-
 module AWT
   java_import java.awt.Color
 end
