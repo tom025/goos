@@ -53,52 +53,62 @@ module AuctionSniper
   AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + '@%s/' + AUCTION_RESOURCE
 
   def self.start(hostname, sniper_id, password, item_id)
-    start_user_interface
-    connection = connect_to(hostname, sniper_id, password)
-    chat = connection.get_chat_manager.create_chat(auction_id(item_id, connection)) do |a_chat, message|
-      # nothing yet
+    main = Main.new
+    main.join_auction(connection(hostname, sniper_id, password), item_id)
+  end
+
+  class Main
+    def initialize
+      start_user_interface
     end
-    chat.send_message(Smack::Message.new)
+
+    def start_user_interface
+      Swing::SwingUtilities.invoke_and_wait(Proc.new { @ui = MainWindow.new })
+    end
+
+    def join_auction(connection, item_id)
+      chat = connection.get_chat_manager.create_chat(auction_id(item_id, connection)) do |a_chat, message|
+        # nothing yet
+      end
+      chat.send_message(Smack::Message.new)
+    end
+
+    private
+    def auction_id(item_id, connection)
+      AUCTION_ID_FORMAT % [item_id, connection.get_service_name]
+    end
+
+    class MainWindow < Swing::JFrame
+      attr_accessor :sniper_status
+
+      def initialize
+        super("Auction Sniper")
+        @sniper_status = create_label(STATUS_JOINING)
+        set_name(MAIN_WINDOW_NAME)
+        add(sniper_status)
+        pack
+        set_default_close_operation(Swing::JFrame::EXIT_ON_CLOSE)
+        set_visible(true)
+      end
+
+      private
+      def create_label(initial_text)
+        label = Swing::JLabel.new(initial_text)
+        label.set_name(SNIPER_STATUS_NAME)
+        label.set_border(Swing::LineBorder.new(AWT::Color::BLACK))
+        label
+      end
+    end
   end
 
   private
-  def self.auction_id(item_id, connection)
-    AUCTION_ID_FORMAT % [item_id, connection.get_service_name]
-  end
 
-  def self.start_user_interface
-    Swing::SwingUtilities.invoke_and_wait(Proc.new { MainWindow.new })
-  end
-
-  def self.connect_to(hostname, username, password)
+  def self.connection(hostname, username, password)
     connection = Smack::XMPPConnection.new(hostname)
     connection.connect
     connection.login(username, password, AUCTION_RESOURCE)
     connection
   end
-
-  class MainWindow < Swing::JFrame
-    attr_accessor :sniper_status
-
-    def initialize
-      super("Auction Sniper")
-      @sniper_status = create_label(STATUS_JOINING)
-      set_name(MAIN_WINDOW_NAME)
-      add(sniper_status)
-      pack
-      set_default_close_operation(Swing::JFrame::EXIT_ON_CLOSE)
-      set_visible(true)
-    end
-
-    private
-    def create_label(initial_text)
-      label = Swing::JLabel.new(initial_text)
-      label.set_name(SNIPER_STATUS_NAME)
-      label.set_border(Swing::LineBorder.new(AWT::Color::BLACK))
-      label
-    end
-  end
-
 end
 
 class FakeAuctionServer
