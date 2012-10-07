@@ -37,6 +37,11 @@ module AWT
   java_import java.awt.Color
 end
 
+module JConcurrent
+  java_import java.util.concurrent.ArrayBlockingQueue
+  java_import java.util.concurrent.TimeUnit
+end
+
 module AuctionSniper
   MAIN_WINDOW_NAME = 'Auction Sniper'
   STATUS_JOINING = 'joining'
@@ -92,9 +97,17 @@ class FakeAuctionServer
   def start_selling_item
     @connection.connect
     @connection.login(ITEM_ID_AS_LOGIN % @item_id,
-                      AUCTION_PASSWORD,
-                      AUCTION_RESOURCE)
+                     AUCTION_PASSWORD,
+                     AUCTION_RESOURCE)
     @connection.get_chat_manager.add_chat_listener(ChatManagerListener.new(self))
+  end
+
+  def has_received_join_request_from_sniper
+    message_listener.receives_a_message
+  end
+
+  def announce_closed
+    current_chat.send_message(Message.new)
   end
 
   def stop
@@ -113,6 +126,15 @@ class FakeAuctionServer
   end
 
   class SingleMessageListener
+    include RSpec::Matchers
+
+    def initialize
+      @messages = JConcurrent::ArrayBlockingQueue.new(1)
+    end
+
+    def receives_a_message
+      @messages.poll(5, JConcurrent::TimeUnit::SECONDS).should_not be_nil
+    end
 
   end
 end
