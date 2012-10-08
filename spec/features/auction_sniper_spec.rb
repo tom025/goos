@@ -18,4 +18,13 @@ describe AuctionSniper do
     When { auction.announce_closed }
     Then { application.shows_sniper_has_lost_auction }
   end
+
+  context 'sniper makes a higher bid but loses' do
+    Given { auction.report_price(1000, 90, 'other bidder') }
+    Given { application.has_shown_sniper_is_bidding }
+    Given { auction.has_recived_bid(1098, ApplicationRunner::SNIPER_XMPP_ID) }
+
+    When { auction.announce_closed }
+    Then { application.shows_sniper_has_lost_auction }
+  end
 end
