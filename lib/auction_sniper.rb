@@ -4,6 +4,7 @@ require 'lib/auction_sniper/main_window'
 module AuctionSniper
   def self.start(hostname, sniper_id, password, item_id)
     main = Main.new
+    main.start_user_interface
     main.join_auction(connection(hostname, sniper_id, password), item_id)
   end
 
