@@ -26,6 +26,12 @@ class FakeAuctionServer
     end
   end
 
+  def report_price(price, increment, bidder)
+    @current_chat.send_message("SOLVersion: 1.1; Event: PRICE; " +
+                               "CurrentPrice: #{price}; Increment: #{increment}; " +
+                               "Bidder: #{bidder};")
+  end
+
   def has_received_join_request_from_sniper
     message_listener.receives_a_message
   end

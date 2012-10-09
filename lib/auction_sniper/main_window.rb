@@ -6,6 +6,7 @@ module AuctionSniper
     SNIPER_STATUS_NAME = 'status'
     MAIN_WINDOW_NAME = 'Auction Sniper'
     STATUS_JOINING = 'joining'
+    STATUS_BIDDING = 'bidding'
     STATUS_LOST = 'lost'
 
     attr_accessor :sniper_status
