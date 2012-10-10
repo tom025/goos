@@ -7,6 +7,8 @@ class FakeAuctionServer
   AUCTION_PASSWORD = 'auction'
   AUCTION_RESOURCE = 'Auction'
 
+  include RSpec::Matchers
+
   attr_accessor :current_chat, :message_listener, :item_id
 
   def initialize(item_id)
@@ -32,8 +34,9 @@ class FakeAuctionServer
                                "Bidder: #{bidder};")
   end
 
-  def has_received_join_request_from_sniper
-    message_listener.receives_a_message
+  def has_received_join_request_from(sniper_id)
+    receives_a_message_matching(
+      sniper_id, eq(AuctionSniper::Main::JOIN_COMMAND_FORMAT))
   end
 
   def announce_closed
@@ -42,5 +45,11 @@ class FakeAuctionServer
 
   def stop
     @connection.disconnect
+  end
+
+  private
+  def receives_a_message_matching(sniper_id, matcher)
+    @message_listener.receives_a_message(matcher)
+    @current_chat.participant.should == sniper_id
   end
 end

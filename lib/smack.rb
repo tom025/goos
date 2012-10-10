@@ -7,4 +7,3 @@ module Smack
   java_import org.jivesoftware.smack.XMPPConnection
   java_import org.jivesoftware.smack.packet.Message
 end
-

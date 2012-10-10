@@ -4,6 +4,7 @@ class ApplicationRunner
   XMPP_HOSTNAME = 'localhost'
   SNIPER_ID = 'sniper'
   SNIPER_PASSWORD = 'sniper'
+  SNIPER_XMPP_ID = 'sniper@localhost/Auction'
 
   def start_bidding_in(auction)
     Thread.new("Test Application") do

@@ -7,6 +7,7 @@ module AuctionSniper
     AUCTION_RESOURCE = 'Auction'
     ITEM_ID_AS_LOGIN = 'auction-%s'
     AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + '@%s/' + AUCTION_RESOURCE
+    JOIN_COMMAND_FORMAT = "SOL: 1.1 Command: Join"
 
     def start_user_interface
       Swing::SwingUtilities.invoke_and_wait do
@@ -22,7 +23,7 @@ module AuctionSniper
             @ui.show_status(MainWindow::STATUS_LOST)
           end
         end
-      chat.send_message(Smack::Message.new)
+      chat.send_message(JOIN_COMMAND_FORMAT)
     end
 
     private

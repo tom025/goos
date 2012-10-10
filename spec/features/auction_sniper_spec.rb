@@ -12,7 +12,7 @@ describe AuctionSniper do
 
   Given { auction.start_selling_item }
   Given { application.start_bidding_in(auction) }
-  Given { auction.has_received_join_request_from_sniper }
+  Given { auction.has_received_join_request_from(ApplicationRunner::SNIPER_XMPP_ID) }
 
   context 'sniper joins auction until auction closes' do
     When { auction.announce_closed }

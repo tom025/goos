@@ -12,8 +12,10 @@ class FakeAuctionServer
       @messages.add(message)
     end
 
-    def receives_a_message
-      @messages.poll(5, JConcurrent::TimeUnit::SECONDS).should_not be_nil
+    def receives_a_message(message_matcher)
+      message = @messages.poll(5, JConcurrent::TimeUnit::SECONDS)
+      message.should_not be_nil
+      message.body.should message_matcher
     end
   end
 end
