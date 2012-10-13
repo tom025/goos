@@ -40,7 +40,7 @@ class FakeAuctionServer
   end
 
   def announce_closed
-    current_chat.send_message(Smack::Message.new)
+    current_chat.send_message("SOLVersion: 1.1; Event: CLOSE;")
   end
 
   def stop

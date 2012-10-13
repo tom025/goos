@@ -1,13 +1,14 @@
 require 'lib/smack'
 require 'lib/swing'
 require 'lib/awt'
+require 'lib/auction_sniper/auction_message_translator'
 
 module AuctionSniper
   class Main
     AUCTION_RESOURCE = 'Auction'
     ITEM_ID_AS_LOGIN = 'auction-%s'
     AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + '@%s/' + AUCTION_RESOURCE
-    JOIN_COMMAND_FORMAT = "SOL: 1.1 Command: Join"
+    JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: Join;"
 
     def start_user_interface
       Swing::SwingUtilities.invoke_and_wait do
@@ -18,12 +19,15 @@ module AuctionSniper
     def join_auction(connection, item_id)
       disconnect_when_ui_closes(connection)
       chat = connection.get_chat_manager.
-        create_chat(auction_id(item_id, connection)) do |a_chat, message|
-          Swing::SwingUtilities.invoke_later do
-            @ui.show_status(MainWindow::STATUS_LOST)
-          end
-        end
+        create_chat(auction_id(item_id, connection),
+                    AuctionMessageTranslator.new(self))
       chat.send_message(JOIN_COMMAND_FORMAT)
+    end
+
+    def auction_closed
+      Swing::SwingUtilities.invoke_later do
+        @ui.show_status(MainWindow::STATUS_LOST)
+      end
     end
 
     private
