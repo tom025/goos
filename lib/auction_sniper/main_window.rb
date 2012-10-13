@@ -1,7 +1,7 @@
 require 'lib/swing'
 require 'lib/awt'
 
-module AuctionSniper
+class AuctionSniper
   class MainWindow < Swing::JFrame
     SNIPER_STATUS_NAME = 'status'
     MAIN_WINDOW_NAME = 'Auction Sniper'

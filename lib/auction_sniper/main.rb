@@ -3,7 +3,7 @@ require 'lib/swing'
 require 'lib/awt'
 require 'lib/auction_sniper/auction_message_translator'
 
-module AuctionSniper
+class AuctionSniper
   class Main
     AUCTION_RESOURCE = 'Auction'
     ITEM_ID_AS_LOGIN = 'auction-%s'

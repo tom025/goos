@@ -1,7 +1,7 @@
 require 'lib/auction_sniper/main'
 require 'lib/auction_sniper/main_window'
 
-module AuctionSniper
+class AuctionSniper
   def self.start(hostname, sniper_id, password, item_id)
     main = Main.new
     main.start_user_interface

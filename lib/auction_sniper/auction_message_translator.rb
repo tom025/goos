@@ -1,4 +1,4 @@
-module AuctionSniper
+class AuctionSniper
   class AuctionMessageTranslator
     def initialize(listener)
       @listener = listener

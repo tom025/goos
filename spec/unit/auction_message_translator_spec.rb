@@ -1,6 +1,6 @@
 require 'lib/auction_sniper/auction_message_translator'
 
-module AuctionSniper
+class AuctionSniper
   describe AuctionMessageTranslator do
     let(:chat) { double(:chat) }
     let(:listener) { double(:event_listener) }
