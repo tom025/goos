@@ -39,6 +39,10 @@ class FakeAuctionServer
       sniper_id, eq(AuctionSniper::Main::JOIN_COMMAND_FORMAT))
   end
 
+  def has_received_bid(bid, sniper_id)
+    receives_a_message_matching(sniper_id, eq(Auction::BID_COMMAND_FORMAT % bid))
+  end
+
   def announce_closed
     current_chat.send_message("SOLVersion: 1.1; Event: CLOSE;")
   end

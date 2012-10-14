@@ -4,13 +4,15 @@ require 'lib/awt'
 require 'lib/auction_sniper/auction_message_translator'
 
 class Auction
-  JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: Join;"
-  BID_COMMAND_FORMAT = ''
+  JOIN_COMMAND_FORMAT = 'SOLVersion: 1.1; Command: Join;'
+  BID_COMMAND_FORMAT = 'SOLVersion: 1.1; Command: Bid; Amount: %d'
+
   def initialize(chat)
     @chat = chat
   end
 
   def bid(amount)
+    send_message(BID_COMMAND_FORMAT % amount)
   end
 
   def join
