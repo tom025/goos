@@ -22,19 +22,32 @@ class AuctionSniper
       @not_to_be_gced = chat
       auction = Auction.new(chat)
       chat.add_message_listener(
-        AuctionMessageTranslator.new(AuctionSniper.new(auction, self)))
+        AuctionMessageTranslator.new(
+          AuctionSniper.new(auction, SniperStateDisplayer.new(@ui)))
+      )
       auction.join
     end
 
-    def sniper_lost
-      Swing::SwingUtilities.invoke_later do
-        @ui.show_status(MainWindow::STATUS_LOST)
+    class SniperStateDisplayer
+      def initialize(ui)
+        @ui = ui
       end
-    end
 
-    def sniper_bidding
-      Swing::SwingUtilities.invoke_later do
-        @ui.show_status(MainWindow::STATUS_BIDDING)
+      def sniper_lost
+        show_status(MainWindow::STATUS_LOST)
+      end
+
+      def sniper_bidding
+        show_status(MainWindow::STATUS_BIDDING)
+      end
+
+      def sniper_winning
+        show_status(MainWindow::STATUS_WINNING)
+      end
+
+      private
+      def show_status(status)
+        Swing::SwingUtilities.invoke_later { @ui.show_status(status) }
       end
     end
 

@@ -7,6 +7,7 @@ class AuctionSniper
     MAIN_WINDOW_NAME = 'Auction Sniper'
     STATUS_JOINING = 'joining'
     STATUS_BIDDING = 'bidding'
+    STATUS_WINNING = 'winning'
     STATUS_LOST = 'lost'
 
     attr_accessor :sniper_status
