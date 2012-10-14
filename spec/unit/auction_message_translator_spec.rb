@@ -13,7 +13,7 @@ class AuctionSniper
     end
 
     it 'notifies the bid details current price message received' do
-      message_text = "SOLVersion: 1.1; Event: PRICE; Current Price: 192; " +
+      message_text = "SOLVersion: 1.1; Event: PRICE; CurrentPrice: 192; " +
         "Increment: 7; Bidder: Someone else;"
       message = double(:message, :body => message_text)
       listener.should_receive(:current_price).with(192, 7)

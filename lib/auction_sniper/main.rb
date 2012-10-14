@@ -3,6 +3,28 @@ require 'lib/swing'
 require 'lib/awt'
 require 'lib/auction_sniper/auction_message_translator'
 
+class Auction
+  JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: Join;"
+  BID_COMMAND_FORMAT = ''
+  def initialize(chat)
+    @chat = chat
+  end
+
+  def bid(amount)
+  end
+
+  def join
+    send_message(JOIN_COMMAND_FORMAT)
+  end
+
+  private
+  def send_message(message)
+    @chat.send_message(message)
+  rescue XMPPException => e
+    puts e.message
+  end
+end
+
 class AuctionSniper
   class Main
     AUCTION_RESOURCE = 'Auction'
@@ -16,29 +38,26 @@ class AuctionSniper
       end
     end
 
-    class Auction
-      def initialize(chat)
-        @chat = chat
-      end
-
-      def bid(amount)
-        puts 'here'
-      end
-    end
-
     def join_auction(connection, item_id)
       disconnect_when_ui_closes(connection)
       chat = connection.get_chat_manager.
         create_chat(auction_id(item_id, connection), nil)
+      @not_to_be_gced = chat
       auction = Auction.new(chat)
       chat.add_message_listener(
         AuctionMessageTranslator.new(AuctionSniper.new(auction, self)))
-      chat.send_message(JOIN_COMMAND_FORMAT)
+      auction.join
     end
 
     def sniper_lost
       Swing::SwingUtilities.invoke_later do
         @ui.show_status(MainWindow::STATUS_LOST)
+      end
+    end
+
+    def sniper_bidding
+      Swing::SwingUtilities.invoke_later do
+        @ui.show_status(MainWindow::STATUS_BIDDING)
       end
     end
 

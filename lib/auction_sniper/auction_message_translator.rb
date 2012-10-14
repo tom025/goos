@@ -10,7 +10,7 @@ class AuctionSniper
       if type == "CLOSE"
         @listener.auction_closed
       elsif type == "PRICE"
-        @listener.current_price(event.fetch("Current Price").to_i,
+        @listener.current_price(event.fetch("CurrentPrice").to_i,
                                 event.fetch("Increment").to_i)
       end
     end
