@@ -17,17 +17,22 @@ class AuctionSniper
     end
 
     class Auction
-      def bid(amount)
+      def initialize(chat)
+        @chat = chat
+      end
 
+      def bid(amount)
+        puts 'here'
       end
     end
 
     def join_auction(connection, item_id)
       disconnect_when_ui_closes(connection)
-      auction = Auction.new
       chat = connection.get_chat_manager.
-        create_chat(auction_id(item_id, connection),
-                    AuctionMessageTranslator.new(AuctionSniper.new(auction, self)))
+        create_chat(auction_id(item_id, connection), nil)
+      auction = Auction.new(chat)
+      chat.add_message_listener(
+        AuctionMessageTranslator.new(AuctionSniper.new(auction, self)))
       chat.send_message(JOIN_COMMAND_FORMAT)
     end
 
