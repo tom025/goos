@@ -32,7 +32,6 @@ class AuctionSniper
     AUCTION_RESOURCE = 'Auction'
     ITEM_ID_AS_LOGIN = 'auction-%s'
     AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + '@%s/' + AUCTION_RESOURCE
-    JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: Join;"
 
     def start_user_interface
       Swing::SwingUtilities.invoke_and_wait do

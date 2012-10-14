@@ -36,7 +36,7 @@ class FakeAuctionServer
 
   def has_received_join_request_from(sniper_id)
     receives_a_message_matching(
-      sniper_id, eq(AuctionSniper::Main::JOIN_COMMAND_FORMAT))
+      sniper_id, eq(Auction::JOIN_COMMAND_FORMAT))
   end
 
   def has_received_bid(bid, sniper_id)
