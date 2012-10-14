@@ -14,5 +14,19 @@ class AuctionSniper
     connection.login(username, password, Main::AUCTION_RESOURCE)
     connection
   end
+
+  def initialize(auction, sniper_listener)
+    @auction = auction
+    @sniper_listener = sniper_listener
+  end
+
+  def auction_closed
+    @sniper_listener.sniper_lost
+  end
+
+  def current_price(price, increment)
+    @sniper_listener.sniper_bidding
+    @auction.bid(price + increment)
+  end
 end
 
