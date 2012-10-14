@@ -1,3 +1,5 @@
+require 'active_support/all'
+
 class AuctionSniper
   class AuctionMessageTranslator
     def initialize(listener)
@@ -5,22 +7,47 @@ class AuctionSniper
     end
 
     def process_message(chat, message)
-      event = unpack_event_from(message)
-      type = event.fetch("Event")
-      if type == "CLOSE"
+      event = AuctionEvent.from(message.body)
+      event_type = event.type
+      if event_type == "CLOSE"
         @listener.auction_closed
-      elsif type == "PRICE"
-        @listener.current_price(event.fetch("CurrentPrice").to_i,
-                                event.fetch("Increment").to_i)
+      elsif event_type == "PRICE"
+        @listener.current_price(event.current_price, event.increment)
       end
     end
 
-    private
-    def unpack_event_from(message)
-      message.body.split(';').inject({}) do |event, element|
-        pair = element.split(":")
-        event[pair[0].strip] = pair[1].strip
-        event
+    class AuctionEvent
+      INTEGER_ATTRIBUTES = [
+        :current_price,
+        :increment
+      ]
+
+      def self.from(message_body)
+        new(unpack_event_from(message_body))
+      end
+
+      def self.unpack_event_from(message)
+        message.split(';').inject({}) do |event, element|
+          pair = element.split(":")
+          event[pair[0].strip] = pair[1].strip
+          event
+        end
+      end
+
+      def initialize(unpacked_message)
+        @unpacked_message = unpacked_message
+      end
+
+      def type
+        @unpacked_message.fetch("Event")
+      end
+
+      def method_missing(attribute, *args, &block)
+        value = @unpacked_message.fetch(attribute.to_s.classify)
+        return value.to_i if INTEGER_ATTRIBUTES.include?(attribute)
+        value
+      rescue IndexError
+        super
       end
     end
   end
