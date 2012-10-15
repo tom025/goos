@@ -9,6 +9,7 @@ class AuctionSniper
     STATUS_BIDDING = 'bidding'
     STATUS_WINNING = 'winning'
     STATUS_LOST = 'lost'
+    STATUS_WON = 'won'
 
     attr_accessor :sniper_status
 

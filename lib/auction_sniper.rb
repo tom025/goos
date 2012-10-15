@@ -18,17 +18,22 @@ class AuctionSniper
   def initialize(auction, sniper_listener)
     @auction = auction
     @sniper_listener = sniper_listener
+    @winning = false
   end
 
   def auction_closed
-    @sniper_listener.sniper_lost
+    if @winning
+      @sniper_listener.sniper_won
+    else
+      @sniper_listener.sniper_lost
+    end
   end
 
   def current_price(price, increment, price_source)
-    case price_source
-    when :from_sniper
+    @winning = price_source == :from_sniper
+    if @winning
       @sniper_listener.sniper_winning
-    when :from_other_bidder
+    else
       @sniper_listener.sniper_bidding
       @auction.bid(price + increment)
     end
