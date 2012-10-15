@@ -23,6 +23,7 @@ class AuctionSniper
       auction = Auction.new(chat)
       chat.add_message_listener(
         AuctionMessageTranslator.new(
+          connection.user,
           AuctionSniper.new(auction, SniperStateDisplayer.new(@ui)))
       )
       auction.join

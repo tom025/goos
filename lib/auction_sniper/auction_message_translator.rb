@@ -2,7 +2,8 @@ require 'active_support/all'
 
 class AuctionSniper
   class AuctionMessageTranslator
-    def initialize(listener)
+    def initialize(sniper_id, listener)
+      @sniper_id = sniper_id
       @listener = listener
     end
 
@@ -12,7 +13,9 @@ class AuctionSniper
       if event_type == "CLOSE"
         @listener.auction_closed
       elsif event_type == "PRICE"
-        @listener.current_price(event.current_price, event.increment)
+        @listener.current_price(event.current_price,
+                                event.increment,
+                                event.is_from(@sniper_id))
       end
     end
 
@@ -40,6 +43,10 @@ class AuctionSniper
 
       def type
         @unpacked_message.fetch("Event")
+      end
+
+      def is_from(sniper_id)
+        sniper_id == bidder ? :from_sniper : :from_other_bidder
       end
 
       def method_missing(attribute, *args, &block)

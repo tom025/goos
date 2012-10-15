@@ -24,7 +24,7 @@ class AuctionSniper
     @sniper_listener.sniper_lost
   end
 
-  def current_price(price, increment)
+  def current_price(price, increment, price_source)
     @sniper_listener.sniper_bidding
     @auction.bid(price + increment)
   end
