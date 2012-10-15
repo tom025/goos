@@ -25,8 +25,13 @@ class AuctionSniper
   end
 
   def current_price(price, increment, price_source)
-    @sniper_listener.sniper_bidding
-    @auction.bid(price + increment)
+    case price_source
+    when :from_sniper
+      @sniper_listener.sniper_winning
+    when :from_other_bidder
+      @sniper_listener.sniper_bidding
+      @auction.bid(price + increment)
+    end
   end
 end
 
