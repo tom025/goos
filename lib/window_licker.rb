@@ -8,8 +8,8 @@ module WindowLicker
   include_package 'com/objogate/wl/swing'
   java_import com.objogate.wl.swing.driver.JFrameDriver
   java_import com.objogate.wl.swing.driver.JLabelDriver
+  java_import com.objogate.wl.swing.driver.JTableDriver
   java_import com.objogate.wl.swing.gesture.GesturePerformer
+  java_import com.objogate.wl.swing.matcher.JLabelTextMatcher
   java_import com.objogate.wl.swing.AWTEventQueueProber
 end
-
-

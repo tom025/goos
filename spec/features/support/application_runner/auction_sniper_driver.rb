@@ -13,13 +13,16 @@ class ApplicationRunner
     end
 
     def shows_sniper_status(text)
-      WindowLicker::JLabelDriver.new(
-        self, named(AuctionSniper::MainWindow::SNIPER_STATUS_NAME)).
-          has_text(equal_to(text))
+      WindowLicker::JTableDriver.new(self, named(AuctionSniper::MainWindow::SNIPER_TABLE_NAME)).has_cell(
+        with_label_text(equal_to(text)))
     end
 
     def named(*args)
       self.class.named(*args)
+    end
+
+    def with_label_text(*args)
+      WindowLicker::JLabelTextMatcher.with_label_text(*args)
     end
 
     def method_missing(method_name, *args, &block)

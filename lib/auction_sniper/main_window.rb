@@ -3,6 +3,7 @@ require 'lib/awt'
 
 class AuctionSniper
   class MainWindow < Swing::JFrame
+    SNIPER_TABLE_NAME = 'Sniper Table'
     SNIPER_STATUS_NAME = 'status'
     MAIN_WINDOW_NAME = 'Auction Sniper'
     STATUS_JOINING = 'joining'
