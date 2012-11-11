@@ -1,10 +1,11 @@
 require 'lib/auction_sniper'
 
 describe AuctionSniper do
+  let(:item_id) { 'item-54321' }
   let(:sniper_listener) { double(:sniper_listener, :sniper_winning => nil,
                                                    :sniper_bidding => nil,
                                                    :sniper_lost => nil) }
-  let(:sniper) { AuctionSniper.new(auction, sniper_listener) }
+  let(:sniper) { AuctionSniper.new(item_id, auction, sniper_listener) }
   let(:auction) { double(:auction).as_null_object }
 
   it 'reports loss when auction closes imediately' do
@@ -15,8 +16,11 @@ describe AuctionSniper do
   it 'bids higer and reports bidding when current price is from an other bidder' do
     price = 1001
     increment = 25
+    bid = price + increment
+    sniper_state = SniperState.new(item_id, price, bid)
+
     auction.should_receive(:bid).with(price + increment)
-    sniper_listener.should_receive(:sniper_bidding).at_least(1)
+    sniper_listener.should_receive(:sniper_bidding).with(sniper_state).at_least(1)
     sniper.current_price(price, increment, :from_other_bidder)
   end
 

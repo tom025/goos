@@ -1,5 +1,6 @@
 require 'lib/auction_sniper/main'
 require 'lib/auction_sniper/main_window'
+require 'lib/sniper_state'
 
 class AuctionSniper
   def self.start(hostname, sniper_id, password, item_id)
@@ -15,8 +16,10 @@ class AuctionSniper
     connection
   end
 
-  def initialize(auction, sniper_listener)
+  attr_reader :item_id
+  def initialize(item_id, auction, sniper_listener)
     @auction = auction
+    @item_id = item_id
     @sniper_listener = sniper_listener
     @winning = false
   end
@@ -34,7 +37,8 @@ class AuctionSniper
     if @winning
       @sniper_listener.sniper_winning
     else
-      @sniper_listener.sniper_bidding
+      bid = price + increment
+      @sniper_listener.sniper_bidding(SniperState.new(item_id, price, bid))
       @auction.bid(price + increment)
     end
   end

@@ -12,4 +12,5 @@ module WindowLicker
   java_import com.objogate.wl.swing.gesture.GesturePerformer
   java_import com.objogate.wl.swing.matcher.JLabelTextMatcher
   java_import com.objogate.wl.swing.AWTEventQueueProber
+  java_import com.objogate.wl.swing.matcher.IterableComponentsMatcher
 end

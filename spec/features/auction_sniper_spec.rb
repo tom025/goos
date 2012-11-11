@@ -21,7 +21,7 @@ describe AuctionSniper do
 
   context 'when another bidder is bidding' do
     Given { auction.report_price(1000, 98, 'other bidder') }
-    Given { application.has_shown_sniper_is_bidding }
+    Given { application.has_shown_sniper_is_bidding(1000, 1098) }
     Given { auction.has_received_bid(1098, ApplicationRunner::SNIPER_XMPP_ID) }
 
     context 'the sniper makes a higher bid but loses' do
@@ -31,10 +31,10 @@ describe AuctionSniper do
 
     context 'the sniper wins an auction by bidding higer' do
       Given { auction.report_price(1098, 97, ApplicationRunner::SNIPER_XMPP_ID) }
-      Given { application.has_shown_sniper_is_winning }
+      Given { application.has_shown_sniper_is_winning(1098) }
 
       When { auction.announce_closed }
-      Then { application.shows_sniper_has_won_auction }
+      Then { application.shows_sniper_has_won_auction(1098) }
     end
   end
 end

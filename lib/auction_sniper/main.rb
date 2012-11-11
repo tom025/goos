@@ -24,7 +24,7 @@ class AuctionSniper
       chat.add_message_listener(
         AuctionMessageTranslator.new(
           connection.user,
-          AuctionSniper.new(auction, SniperStateDisplayer.new(@ui)))
+          AuctionSniper.new(item_id, auction, SniperStateDisplayer.new(@ui)))
       )
       auction.join
     end
@@ -42,8 +42,10 @@ class AuctionSniper
         show_status(MainWindow::STATUS_LOST)
       end
 
-      def sniper_bidding
-        show_status(MainWindow::STATUS_BIDDING)
+      def sniper_bidding(sniper_state)
+        Swing::SwingUtilities.invoke_later do
+          @ui.sniper_status_changed(sniper_state, MainWindow::STATUS_BIDDING)
+        end
       end
 
       def sniper_winning
@@ -80,6 +82,7 @@ class Auction
   JOIN_COMMAND_FORMAT = 'SOLVersion: 1.1; Command: Join;'
   BID_COMMAND_FORMAT = 'SOLVersion: 1.1; Command: Bid; Amount: %d'
 
+  attr_reader :item_id
   def initialize(chat)
     @chat = chat
   end
