@@ -47,7 +47,11 @@ class AuctionSniper
     require 'lib/sniper_state'
     require 'lib/sniper_snapshot'
     class SnipersTableModel < Swing::AbstractTableModel
-      STATUS_TEXT = [STATUS_JOINING, STATUS_BIDDING]
+      STATUS_TEXT = [
+        STATUS_JOINING,
+        STATUS_BIDDING,
+        STATUS_WINNING
+      ]
       STARTING_UP = SniperSnapshot.new('-', '-', '-', SniperState::JOINING)
       COLUMNS = [:item_identifier, :last_price, :last_bid, :sniper_status]
 

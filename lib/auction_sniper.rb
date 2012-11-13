@@ -17,10 +17,10 @@ class AuctionSniper
     connection
   end
 
-  attr_reader :item_id
+  attr_reader :snapshot
   def initialize(item_id, auction, sniper_listener)
     @auction = auction
-    @item_id = item_id
+    @snapshot = SniperSnapshot.joining(item_id)
     @sniper_listener = sniper_listener
     @winning = false
   end
@@ -36,13 +36,13 @@ class AuctionSniper
   def current_price(price, increment, price_source)
     @winning = price_source == :from_sniper
     if @winning
-      @sniper_listener.sniper_winning
+      @snapshot = snapshot.winning(price)
     else
       bid = price + increment
-      sniper_snapshot = SniperSnapshot.new(item_id, price, bid, SniperState::BIDDING)
-      @sniper_listener.sniper_state_changed(sniper_snapshot)
-      @auction.bid(price + increment)
+      @snapshot = snapshot.bidding(price, bid)
+      @auction.bid(bid)
     end
+    @sniper_listener.sniper_state_changed(snapshot)
   end
 end
 
