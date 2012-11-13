@@ -18,8 +18,8 @@ class AuctionSniper
       it 'sets the values of the columns' do
         listener.should_receive(:table_changed)
 
-        sniper_state = SniperState.new('item-1234', 555, 666)
-        model.sniper_status_changed(sniper_state, STATUS_BIDDING)
+        sniper_snapshot = SniperSnapshot.new('item-1234', 555, 666, SniperState::BIDDING)
+        model.sniper_state_changed(sniper_snapshot)
 
         column_should_be(:item_identifier, 'item-1234')
         column_should_be(:last_price, 555)

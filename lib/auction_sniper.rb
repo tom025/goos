@@ -1,6 +1,7 @@
 require 'lib/auction_sniper/main'
 require 'lib/auction_sniper/main_window'
 require 'lib/sniper_state'
+require 'lib/sniper_snapshot'
 
 class AuctionSniper
   def self.start(hostname, sniper_id, password, item_id)
@@ -38,7 +39,8 @@ class AuctionSniper
       @sniper_listener.sniper_winning
     else
       bid = price + increment
-      @sniper_listener.sniper_bidding(SniperState.new(item_id, price, bid))
+      sniper_snapshot = SniperSnapshot.new(item_id, price, bid, SniperState::BIDDING)
+      @sniper_listener.sniper_state_changed(sniper_snapshot)
       @auction.bid(price + increment)
     end
   end

@@ -2,8 +2,8 @@ require 'lib/auction_sniper'
 
 describe AuctionSniper do
   let(:item_id) { 'item-54321' }
-  let(:sniper_listener) { double(:sniper_listener, :sniper_winning => nil,
-                                                   :sniper_bidding => nil,
+  let(:sniper_listener) { double(:sniper_listener, :sniper_state_changed => nil,
+                                                   :sniper_winning => nil,
                                                    :sniper_lost => nil) }
   let(:sniper) { AuctionSniper.new(item_id, auction, sniper_listener) }
   let(:auction) { double(:auction).as_null_object }
@@ -17,10 +17,10 @@ describe AuctionSniper do
     price = 1001
     increment = 25
     bid = price + increment
-    sniper_state = SniperState.new(item_id, price, bid)
+    sniper_snapshot = SniperSnapshot.new(item_id, price, bid, SniperState::BIDDING)
 
     auction.should_receive(:bid).with(price + increment)
-    sniper_listener.should_receive(:sniper_bidding).with(sniper_state).at_least(1)
+    sniper_listener.should_receive(:sniper_state_changed).with(sniper_snapshot).at_least(1)
     sniper.current_price(price, increment, :from_other_bidder)
   end
 

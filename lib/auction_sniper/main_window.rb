@@ -28,8 +28,8 @@ class AuctionSniper
       @snipers.set_status(text)
     end
 
-    def sniper_status_changed(sniper_state, status_text)
-      @snipers.sniper_status_changed(sniper_state, status_text)
+    def sniper_state_changed(sniper_snapshot)
+      @snipers.sniper_state_changed(sniper_snapshot)
     end
 
     private
@@ -45,15 +45,17 @@ class AuctionSniper
     end
 
     require 'lib/sniper_state'
+    require 'lib/sniper_snapshot'
     class SnipersTableModel < Swing::AbstractTableModel
-      STARTING_UP = SniperState.new('-', '-', '-')
+      STATUS_TEXT = [STATUS_JOINING, STATUS_BIDDING]
+      STARTING_UP = SniperSnapshot.new('-', '-', '-', SniperState::JOINING)
       COLUMNS = [:item_identifier, :last_price, :last_bid, :sniper_status]
 
-      attr_reader :sniper_state, :status_text
+      attr_reader :sniper_snapshot, :status_text
 
       def initialize
         @status_text = STATUS_JOINING
-        @sniper_state = STARTING_UP
+        @sniper_snapshot = STARTING_UP
       end
 
       def getColumnCount
@@ -65,17 +67,17 @@ class AuctionSniper
       def getValueAt(row_index, column_index)
         column_name = COLUMNS.at(column_index)
         case column_name
-        when :item_identifier then sniper_state.item_id
-        when :last_price then sniper_state.last_price
-        when :last_bid then sniper_state.last_bid
+        when :item_identifier then sniper_snapshot.item_id
+        when :last_price then sniper_snapshot.last_price
+        when :last_bid then sniper_snapshot.last_bid
         when :sniper_status then status_text
         else raise ArgumentError, "No column at #{column_index}"
         end
       end
 
-      def sniper_status_changed(new_sniper_state, new_status_text)
-        @sniper_state = new_sniper_state
-        @status_text = new_status_text
+      def sniper_state_changed(new_sniper_snapshot)
+        @sniper_snapshot = new_sniper_snapshot
+        @status_text = STATUS_TEXT[new_sniper_snapshot.state.ordinal]
         fire_table_rows_updated(0, 0)
       end
 

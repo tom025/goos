@@ -42,14 +42,14 @@ class AuctionSniper
         show_status(MainWindow::STATUS_LOST)
       end
 
-      def sniper_bidding(sniper_state)
-        Swing::SwingUtilities.invoke_later do
-          @ui.sniper_status_changed(sniper_state, MainWindow::STATUS_BIDDING)
-        end
-      end
-
       def sniper_winning
         show_status(MainWindow::STATUS_WINNING)
+      end
+
+      def sniper_state_changed(sniper_snapshot)
+        Swing::SwingUtilities.invoke_later do
+          @ui.sniper_state_changed(sniper_snapshot)
+        end
       end
 
       private
