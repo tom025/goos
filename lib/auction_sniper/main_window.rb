@@ -24,10 +24,6 @@ class AuctionSniper
       set_visible(true)
     end
 
-    def show_status(text)
-      @snipers.set_status(text)
-    end
-
     def sniper_state_changed(sniper_snapshot)
       @snipers.sniper_state_changed(sniper_snapshot)
     end
@@ -54,13 +50,13 @@ class AuctionSniper
         STATUS_LOST,
         STATUS_WON
       ]
+
       STARTING_UP = SniperSnapshot.new('-', '-', '-', SniperState::JOINING)
       COLUMNS = [:item_identifier, :last_price, :last_bid, :sniper_status]
 
       attr_reader :sniper_snapshot, :status_text
 
       def initialize
-        @status_text = STATUS_JOINING
         @sniper_snapshot = STARTING_UP
       end
 
@@ -76,20 +72,19 @@ class AuctionSniper
         when :item_identifier then sniper_snapshot.item_id
         when :last_price then sniper_snapshot.last_price
         when :last_bid then sniper_snapshot.last_bid
-        when :sniper_status then status_text
+        when :sniper_status then text_for(sniper_snapshot.state)
         else raise ArgumentError, "No column at #{column_index}"
         end
       end
 
       def sniper_state_changed(new_sniper_snapshot)
         @sniper_snapshot = new_sniper_snapshot
-        @status_text = STATUS_TEXT[new_sniper_snapshot.state.ordinal]
         fire_table_rows_updated(0, 0)
       end
 
-      def set_status(new_status)
-        @status_text = new_status
-        fire_table_rows_updated(0, 0)
+      private
+      def text_for(sniper_state)
+        STATUS_TEXT[sniper_state.ordinal]
       end
     end
 
