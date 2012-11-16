@@ -50,7 +50,9 @@ class AuctionSniper
       STATUS_TEXT = [
         STATUS_JOINING,
         STATUS_BIDDING,
-        STATUS_WINNING
+        STATUS_WINNING,
+        STATUS_LOST,
+        STATUS_WON
       ]
       STARTING_UP = SniperSnapshot.new('-', '-', '-', SniperState::JOINING)
       COLUMNS = [:item_identifier, :last_price, :last_bid, :sniper_status]

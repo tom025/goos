@@ -11,6 +11,10 @@ class SniperSnapshot < Struct.new(:item_id, :last_price, :last_bid, :state)
     new(item_id, new_last_price, new_last_price, SniperState::WINNING)
   end
 
+  def closed
+    new(item_id, last_price, last_bid, state.when_auction_closed)
+  end
+
   private
   def new(*args)
     self.class.new(*args)

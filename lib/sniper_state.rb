@@ -1,6 +1,7 @@
 class SniperState
   attr_reader :value
-  def initialize(value)
+  def initialize(value, &when_auction_closed)
+    @when_auction_closed = when_auction_closed
     @value = value
   end
 
@@ -8,11 +9,15 @@ class SniperState
     STATES.map(&:value).index(value)
   end
 
+  def when_auction_closed
+    @when_auction_closed.call
+  end
+
   STATES = [
-    JOINING = new(:joining),
-    BIDDING = new(:bidding),
-    WINNING = new(:winning),
-    LOST    = new(:lost),
-    WON     = new(:won)
+    JOINING = new(:joining) { LOST },
+    BIDDING = new(:bidding) { LOST },
+    WINNING = new(:winning) { WON },
+    LOST    = new(:lost) { raise RuntimeError, 'Acution is already closed' },
+    WON     = new(:won) { raise RuntimeError, 'Auction is already closed' }
   ]
 end
