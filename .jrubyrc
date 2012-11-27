@@ -1,1 +1,2 @@
 compat.version=1.9
+compile.invokedynamic=true
