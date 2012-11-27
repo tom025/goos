@@ -40,53 +40,5 @@ class AuctionSniper
       snipers_table
     end
 
-    require 'lib/sniper_state'
-    require 'lib/sniper_snapshot'
-    class SnipersTableModel < Swing::AbstractTableModel
-      STATUS_TEXT = [
-        STATUS_JOINING,
-        STATUS_BIDDING,
-        STATUS_WINNING,
-        STATUS_LOST,
-        STATUS_WON
-      ]
-
-      STARTING_UP = SniperSnapshot.new('-', '-', '-', SniperState::JOINING)
-      COLUMNS = [:item_identifier, :last_price, :last_bid, :sniper_status]
-
-      attr_reader :sniper_snapshot, :status_text
-
-      def initialize
-        @sniper_snapshot = STARTING_UP
-      end
-
-      def getColumnCount
-        COLUMNS.length
-      end
-
-      def getRowCount; 1; end
-
-      def getValueAt(row_index, column_index)
-        column_name = COLUMNS.at(column_index)
-        case column_name
-        when :item_identifier then sniper_snapshot.item_id
-        when :last_price then sniper_snapshot.last_price
-        when :last_bid then sniper_snapshot.last_bid
-        when :sniper_status then text_for(sniper_snapshot.state)
-        else raise ArgumentError, "No column at #{column_index}"
-        end
-      end
-
-      def sniper_state_changed(new_sniper_snapshot)
-        @sniper_snapshot = new_sniper_snapshot
-        fire_table_rows_updated(0, 0)
-      end
-
-      private
-      def text_for(sniper_state)
-        STATUS_TEXT[sniper_state.ordinal]
-      end
-    end
-
   end
 end

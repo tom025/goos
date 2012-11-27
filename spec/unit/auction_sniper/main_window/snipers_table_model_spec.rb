@@ -1,4 +1,4 @@
-require 'lib/auction_sniper/main_window'
+require 'lib/auction_sniper/main_window/snipers_table_model'
 
 class AuctionSniper
   class MainWindow
@@ -12,7 +12,7 @@ class AuctionSniper
       end
 
       it 'has the correct number of columns' do
-        model.getColumnCount.should == SnipersTableModel::COLUMNS.length
+        model.getColumnCount.should == Column.length
       end
 
       it 'sets the values of the columns' do
@@ -21,15 +21,15 @@ class AuctionSniper
         sniper_snapshot = SniperSnapshot.new('item-1234', 555, 666, SniperState::BIDDING)
         model.sniper_state_changed(sniper_snapshot)
 
-        column_should_be(:item_identifier, 'item-1234')
-        column_should_be(:last_price, 555)
-        column_should_be(:last_bid, 666)
-        column_should_be(:sniper_status, STATUS_BIDDING)
+        column_should_be(Column::ITEM_IDENTIFIER, 'item-1234')
+        column_should_be(Column::LAST_PRICE, 555)
+        column_should_be(Column::LAST_BID, 666)
+        column_should_be(Column::SNIPER_STATE, STATUS_BIDDING)
       end
 
-      def column_should_be(column_name, expected)
+      def column_should_be(column, expected)
         row_index = 0
-        column_index = SnipersTableModel::COLUMNS.index(column_name)
+        column_index = column.ordinal
         model.getValueAt(row_index, column_index).should == expected
       end
 
