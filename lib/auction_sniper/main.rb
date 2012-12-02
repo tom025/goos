@@ -3,6 +3,7 @@ require 'lib/swing'
 require 'lib/awt'
 require 'lib/auction_sniper/auction_message_translator'
 require 'lib/auction_sniper/snipers_table_model'
+require 'lib/auction_sniper/swing_thread_sniper_listener'
 
 class AuctionSniper
   class Main
@@ -34,17 +35,6 @@ class AuctionSniper
       auction.join
     end
 
-    class SwingThreadSniperListener
-      def initialize(snipers)
-        @snipers = snipers
-      end
-
-      def sniper_state_changed(sniper_snapshot)
-        Swing::SwingUtilities.invoke_later do
-          @snipers.sniper_state_changed(sniper_snapshot)
-        end
-      end
-    end
 
     private
     def auction_id(item_id, connection)
