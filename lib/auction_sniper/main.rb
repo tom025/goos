@@ -29,19 +29,19 @@ class AuctionSniper
       chat.add_message_listener(
         AuctionMessageTranslator.new(
           connection.user,
-          AuctionSniper.new(item_id, auction, SniperStateDisplayer.new(@snipers)))
+          AuctionSniper.new(item_id, auction, SwingThreadSniperListener.new(@snipers)))
       )
       auction.join
     end
 
-    class SniperStateDisplayer
-      def initialize(ui)
-        @ui = ui
+    class SwingThreadSniperListener
+      def initialize(snipers)
+        @snipers = snipers
       end
 
       def sniper_state_changed(sniper_snapshot)
         Swing::SwingUtilities.invoke_later do
-          @ui.sniper_state_changed(sniper_snapshot)
+          @snipers.sniper_state_changed(sniper_snapshot)
         end
       end
     end
