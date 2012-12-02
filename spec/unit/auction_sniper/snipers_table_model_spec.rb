@@ -1,4 +1,4 @@
-require 'lib/auction_sniper/main_window/snipers_table_model'
+require 'lib/auction_sniper/snipers_table_model'
 
 class AuctionSniper
   class MainWindow

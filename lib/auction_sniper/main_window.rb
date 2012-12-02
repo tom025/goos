@@ -12,20 +12,14 @@ class AuctionSniper
     STATUS_LOST = 'lost'
     STATUS_WON = 'won'
 
-    attr_accessor :sniper_status
-
-    def initialize
+    def initialize(snipers)
       super("Auction Sniper")
-      @snipers = SnipersTableModel.new
+      @snipers = snipers
       set_name(MAIN_WINDOW_NAME)
       fill_content_pane(make_snipers_table)
       pack
       set_default_close_operation(Swing::JFrame::EXIT_ON_CLOSE)
       set_visible(true)
-    end
-
-    def sniper_state_changed(sniper_snapshot)
-      @snipers.sniper_state_changed(sniper_snapshot)
     end
 
     private

@@ -2,6 +2,7 @@ require 'lib/smack'
 require 'lib/swing'
 require 'lib/awt'
 require 'lib/auction_sniper/auction_message_translator'
+require 'lib/auction_sniper/snipers_table_model'
 
 class AuctionSniper
   class Main
@@ -9,9 +10,13 @@ class AuctionSniper
     ITEM_ID_AS_LOGIN = 'auction-%s'
     AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + '@%s/' + AUCTION_RESOURCE
 
+    def initialize
+      @snipers = SnipersTableModel.new
+    end
+
     def start_user_interface
       Swing::SwingUtilities.invoke_and_wait do
-        @ui = MainWindow.new
+        @ui = MainWindow.new(@snipers)
       end
     end
 
@@ -24,7 +29,7 @@ class AuctionSniper
       chat.add_message_listener(
         AuctionMessageTranslator.new(
           connection.user,
-          AuctionSniper.new(item_id, auction, SniperStateDisplayer.new(@ui)))
+          AuctionSniper.new(item_id, auction, SniperStateDisplayer.new(@snipers)))
       )
       auction.join
     end

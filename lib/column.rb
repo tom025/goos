@@ -23,6 +23,6 @@ class Column
              LAST_PRICE = new(&:last_price),
              LAST_BID = new(&:last_bid),
              SNIPER_STATE = new do |snapshot|
-               AuctionSniper::MainWindow::SnipersTableModel.text_for(snapshot.state)
+               AuctionSniper::SnipersTableModel.text_for(snapshot.state)
              end]
 end
