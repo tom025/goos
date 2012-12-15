@@ -28,6 +28,10 @@ class AuctionSniper
 
     def getRowCount; 1; end
 
+    def getColumnName(column)
+      Column.at(column).name
+    end
+
     def getValueAt(row_index, column_index)
       Column.at(column_index).value_in(sniper_snapshot)
     end

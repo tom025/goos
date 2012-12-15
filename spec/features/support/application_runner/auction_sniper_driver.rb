@@ -12,6 +12,14 @@ class ApplicationRunner
       new(gesture_performer, top_level_driver, event_queue_probe)
     end
 
+    def has_column_titles
+      headers = WindowLicker::JTableHeaderDriver.new(self, Swing::JTableHeader.java_class)
+      headers.has_headers(matching(with_label_text("Item"),
+                                   with_label_text("Last Price"),
+                                   with_label_text("Last Bid"),
+                                   with_label_text("State")))
+    end
+
     def shows_sniper_status(text)
       snipers_table.has_cell(with_label_text(equal_to(text)))
     end

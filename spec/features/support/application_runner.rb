@@ -19,6 +19,8 @@ class ApplicationRunner
       end
     end
     @driver = AuctionSniperDriver.with_timeout(1000)
+    @driver.has_title(AuctionSniper::MainWindow::MAIN_WINDOW_NAME)
+    @driver.has_column_titles
     @driver.shows_sniper_status(AuctionSniper::MainWindow::STATUS_JOINING)
   end
 

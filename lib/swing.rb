@@ -7,5 +7,6 @@ module Swing
   java_import javax.swing.border.LineBorder
   java_import javax.swing.table.AbstractTableModel
   java_import javax.swing.JTable
+  java_import javax.swing.table.JTableHeader
   java_import javax.swing.JScrollPane
 end

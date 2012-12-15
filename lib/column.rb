@@ -1,5 +1,7 @@
 class Column
-  def initialize(&value_in)
+  attr_reader :name
+  def initialize(name, &value_in)
+    @name = name
     @value_in = value_in
   end
 
@@ -19,10 +21,10 @@ class Column
     COLUMNS.index(self)
   end
 
-  COLUMNS = [ITEM_IDENTIFIER = new(&:item_id),
-             LAST_PRICE = new(&:last_price),
-             LAST_BID = new(&:last_bid),
-             SNIPER_STATE = new do |snapshot|
+  COLUMNS = [ITEM_IDENTIFIER = new('Item', &:item_id),
+             LAST_PRICE = new('Last Price', &:last_price),
+             LAST_BID = new('Last Bid', &:last_bid),
+             SNIPER_STATE = new('State') do |snapshot|
                AuctionSniper::SnipersTableModel.text_for(snapshot.state)
              end]
 end
