@@ -6,13 +6,11 @@ class ApplicationRunner
   SNIPER_PASSWORD = 'sniper'
   SNIPER_XMPP_ID = 'sniper@localhost/Auction'
 
-  attr_reader :item_id
-
-  def start_bidding_in(auction)
-    @item_id = auction.item_id
+  def start_bidding_in(*auctions)
+    item_ids = auctions.map(&:item_id)
     Thread.new("Test Application") do
       begin
-        AuctionSniper.start(XMPP_HOSTNAME, SNIPER_ID, SNIPER_PASSWORD, auction.item_id)
+        AuctionSniper.start(XMPP_HOSTNAME, SNIPER_ID, SNIPER_PASSWORD, *item_ids)
       rescue Exception => e
         puts e.message
         puts e.backtrace
@@ -21,29 +19,31 @@ class ApplicationRunner
     @driver = AuctionSniperDriver.with_timeout(1000)
     @driver.has_title(AuctionSniper::MainWindow::MAIN_WINDOW_NAME)
     @driver.has_column_titles
-    @driver.shows_sniper_status(AuctionSniper::MainWindow::STATUS_JOINING)
+    auctions.each do |auction|
+      @driver.shows_sniper_status(auction.item_id, AuctionSniper::MainWindow::STATUS_JOINING)
+    end
   end
 
-  def shows_sniper_has_lost_auction
-    @driver.shows_sniper_status(AuctionSniper::MainWindow::STATUS_LOST)
+  def shows_sniper_has_lost(auction)
+    @driver.shows_sniper_status(auction.item_id, AuctionSniper::MainWindow::STATUS_LOST)
   end
 
-  def shows_sniper_has_won_auction(last_price)
-    @driver.shows_sniper_state(item_id,
+  def shows_sniper_has_won(auction, last_price)
+    @driver.shows_sniper_state(auction.item_id,
                                last_price,
                                last_price,
                                AuctionSniper::MainWindow::STATUS_WON)
   end
 
-  def has_shown_sniper_is_bidding(last_price, last_bid)
-    @driver.shows_sniper_state(item_id,
+  def has_shown_sniper_is_bidding(auction, last_price, last_bid)
+    @driver.shows_sniper_state(auction.item_id,
                                last_price,
                                last_bid,
                                AuctionSniper::MainWindow::STATUS_BIDDING)
   end
 
-  def has_shown_sniper_is_winning(winning_bid)
-    @driver.shows_sniper_state(item_id,
+  def has_shown_sniper_is_winning(auction, winning_bid)
+    @driver.shows_sniper_state(auction.item_id,
                                winning_bid,
                                winning_bid,
                                AuctionSniper::MainWindow::STATUS_WINNING)

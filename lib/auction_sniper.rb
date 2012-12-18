@@ -4,10 +4,14 @@ require 'lib/sniper_state'
 require 'lib/sniper_snapshot'
 
 class AuctionSniper
-  def self.start(hostname, sniper_id, password, item_id)
+  def self.start(hostname, sniper_id, password, *item_ids)
     main = Main.new
     main.start_user_interface
-    main.join_auction(connection(hostname, sniper_id, password), item_id)
+    connection = connection(hostname, sniper_id, password)
+    main.disconnect_when_ui_closes(connection)
+    item_ids.each do |item_id|
+      main.join_auction(connection, item_id)
+    end
   end
 
   def self.connection(hostname, username, password)

@@ -13,6 +13,7 @@ class AuctionSniper
 
     def initialize
       @snipers = SnipersTableModel.new
+      @not_to_be_gced = []
     end
 
     def start_user_interface
@@ -22,10 +23,10 @@ class AuctionSniper
     end
 
     def join_auction(connection, item_id)
-      disconnect_when_ui_closes(connection)
+      safely_add_item_to_model(item_id)
       chat = connection.get_chat_manager.
         create_chat(auction_id(item_id, connection), nil)
-      @not_to_be_gced = chat
+      @not_to_be_gced << chat
       auction = Auction.new(chat)
       chat.add_message_listener(
         AuctionMessageTranslator.new(
@@ -35,16 +36,21 @@ class AuctionSniper
       auction.join
     end
 
-
-    private
-    def auction_id(item_id, connection)
-      AUCTION_ID_FORMAT % [item_id, connection.get_service_name]
-    end
-
     def disconnect_when_ui_closes(connection)
       window_adapter = WindowAdapter.new
       window_adapter.connection = connection
       @ui.add_window_listener(window_adapter)
+    end
+
+    private
+    def safely_add_item_to_model(item_id)
+      Swing::SwingUtilities.invoke_and_wait do
+        @snipers.add_sniper(SniperSnapshot.joining(item_id))
+      end
+    end
+
+    def auction_id(item_id, connection)
+      AUCTION_ID_FORMAT % [item_id, connection.get_service_name]
     end
 
     class WindowAdapter < AWT::WindowAdapter

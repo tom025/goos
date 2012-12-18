@@ -20,7 +20,7 @@ class ApplicationRunner
                                    with_label_text("State")))
     end
 
-    def shows_sniper_status(text)
+    def shows_sniper_status(item_id, text)
       snipers_table.has_cell(with_label_text(equal_to(text)))
     end
 
