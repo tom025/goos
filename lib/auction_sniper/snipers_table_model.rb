@@ -14,31 +14,43 @@ class AuctionSniper
       MainWindow::STATUS_WON
     ]
 
-    STARTING_UP = SniperSnapshot.new('-', '-', '-', SniperState::JOINING)
-
-    attr_reader :sniper_snapshot, :status_text
+    attr_reader :snapshots
 
     def initialize
-      @sniper_snapshot = STARTING_UP
+      @snapshots = []
+    end
+
+    def add_sniper(snapshot)
+      snapshots << snapshot
+      row = row_count
+      fire_table_rows_inserted(row, row)
     end
 
     def getColumnCount
       Column.length
     end
 
-    def getRowCount; 1; end
+    def getRowCount
+      snapshots.size
+    end
 
     def getColumnName(column)
       Column.at(column).name
     end
 
     def getValueAt(row_index, column_index)
-      Column.at(column_index).value_in(sniper_snapshot)
+      Column.at(column_index).value_in(snapshots.fetch(row_index))
     end
 
-    def sniper_state_changed(new_sniper_snapshot)
-      @sniper_snapshot = new_sniper_snapshot
-      fire_table_rows_updated(0, 0)
+    def sniper_state_changed(new_snapshot)
+      row = row_matching(new_snapshot)
+      @snapshots[row] = new_snapshot
+      fire_table_rows_updated(row, row)
+    end
+
+    def row_matching(snapshot)
+      snapshots.index { |s| s.item_id == snapshot.item_id } or
+        raise IndexError, 'Snapshot not found in table model.'
     end
 
     def self.text_for(sniper_state)
