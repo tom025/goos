@@ -1,5 +1,6 @@
 require 'lib/swing'
 require 'lib/awt'
+require 'lib/user_requests'
 
 class AuctionSniper
   class MainWindow < Swing::JFrame
@@ -58,20 +59,5 @@ class AuctionSniper
       controls
     end
 
-    class UserRequests
-      def initialize
-        @listeners = []
-      end
-
-      def <<(listener)
-        @listeners << listener
-      end
-
-      def notify(event, *args)
-        @listeners.each do |listener|
-          listener.public_send(event, *args)
-        end
-      end
-    end
   end
 end
