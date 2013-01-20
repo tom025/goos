@@ -9,9 +9,7 @@ class AuctionSniper
     main.start_user_interface
     connection = connection(hostname, sniper_id, password)
     main.disconnect_when_ui_closes(connection)
-    item_ids.each do |item_id|
-      main.join_auction(connection, item_id)
-    end
+    main.add_user_request_listener_for(connection)
   end
 
   def self.connection(hostname, username, password)

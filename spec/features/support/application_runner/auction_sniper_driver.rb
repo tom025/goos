@@ -20,6 +20,27 @@ class ApplicationRunner
                                    with_label_text("State")))
     end
 
+    def start_bidding_for(item_id)
+      item_id_field.replace_all_text(item_id)
+      bid_button.click
+    end
+
+    def item_id_field
+      new_item_id = WindowLicker::JTextFieldDriver.new(
+        self,
+        Swing::JTextField.java_class,
+        named(AuctionSniper::MainWindow::NEW_ITEM_ID_NAME))
+
+      new_item_id.focus_with_mouse
+      new_item_id
+    end
+
+    def bid_button
+      WindowLicker::JButtonDriver.new(self,
+                                      Swing::JButton.java_class,
+                                      named(AuctionSniper::MainWindow::JOIN_BUTTON_NAME))
+    end
+
     def shows_sniper_status(item_id, text)
       snipers_table.has_cell(with_label_text(equal_to(text)))
     end

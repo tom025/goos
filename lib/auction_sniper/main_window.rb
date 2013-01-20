@@ -6,6 +6,8 @@ class AuctionSniper
     SNIPER_TABLE_NAME = 'Sniper Table'
     SNIPER_STATUS_NAME = 'status'
     MAIN_WINDOW_NAME = 'Auction Sniper'
+    NEW_ITEM_ID_NAME = 'item id'
+    JOIN_BUTTON_NAME = 'join button'
     STATUS_JOINING = 'joining'
     STATUS_BIDDING = 'bidding'
     STATUS_WINNING = 'winning'
@@ -14,25 +16,62 @@ class AuctionSniper
 
     def initialize(snipers)
       super("Auction Sniper")
-      @snipers = snipers
+      @user_requests = UserRequests.new
       set_name(MAIN_WINDOW_NAME)
-      fill_content_pane(make_snipers_table)
+      fill_content_pane(make_snipers_table(snipers), make_controls)
       pack
       set_default_close_operation(Swing::JFrame::EXIT_ON_CLOSE)
       set_visible(true)
     end
 
+    def add_user_request_listener(listener)
+      @user_requests << listener
+    end
+
     private
-    def fill_content_pane(snipers_table)
+    def fill_content_pane(snipers_table, controls)
       content_pane.layout = AWT::BorderLayout.new
+      content_pane.add(controls, AWT::BorderLayout::NORTH)
       content_pane.add(Swing::JScrollPane.new(snipers_table), AWT::BorderLayout::CENTER)
     end
 
-    def make_snipers_table
-      snipers_table = Swing::JTable.new(@snipers)
+    def make_snipers_table(snipers)
+      snipers_table = Swing::JTable.new(snipers)
       snipers_table.name = SNIPER_TABLE_NAME
       snipers_table
     end
 
+    def make_controls
+      controls = Swing::JPanel.new(AWT::FlowLayout.new)
+      item_id_field = Swing::JTextField.new
+      item_id_field.columns = 25
+      item_id_field.name = NEW_ITEM_ID_NAME
+      controls.add(item_id_field)
+
+      join_auction_button = Swing::JButton.new('Join Auction')
+      join_auction_button.name = JOIN_BUTTON_NAME
+      join_auction_button.add_action_listener do 
+        @user_requests.notify(:join_auction, item_id_field.text)
+      end
+      controls.add(join_auction_button)
+
+      controls
+    end
+
+    class UserRequests
+      def initialize
+        @listeners = []
+      end
+
+      def <<(listener)
+        @listeners << listener
+      end
+
+      def notify(event, *args)
+        @listeners.each do |listener|
+          listener.public_send(event, *args)
+        end
+      end
+    end
   end
 end

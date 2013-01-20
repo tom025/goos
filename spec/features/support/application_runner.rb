@@ -7,10 +7,17 @@ class ApplicationRunner
   SNIPER_XMPP_ID = 'sniper@localhost/Auction'
 
   def start_bidding_in(*auctions)
-    item_ids = auctions.map(&:item_id)
+    start_sniper
+    auctions.map(&:item_id).each do |item_id|
+      @driver.start_bidding_for(item_id)
+      @driver.shows_sniper_status(item_id, AuctionSniper::MainWindow::STATUS_JOINING)
+    end
+  end
+
+  def start_sniper
     Thread.new("Test Application") do
       begin
-        AuctionSniper.start(XMPP_HOSTNAME, SNIPER_ID, SNIPER_PASSWORD, *item_ids)
+        AuctionSniper.start(XMPP_HOSTNAME, SNIPER_ID, SNIPER_PASSWORD)
       rescue Exception => e
         puts e.message
         puts e.backtrace
@@ -19,9 +26,6 @@ class ApplicationRunner
     @driver = AuctionSniperDriver.with_timeout(1000)
     @driver.has_title(AuctionSniper::MainWindow::MAIN_WINDOW_NAME)
     @driver.has_column_titles
-    auctions.each do |auction|
-      @driver.shows_sniper_status(auction.item_id, AuctionSniper::MainWindow::STATUS_JOINING)
-    end
   end
 
   def shows_sniper_has_lost(auction)
