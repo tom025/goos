@@ -6,6 +6,7 @@ require 'lib/auction_sniper/snipers_table_model'
 require 'lib/auction_sniper/swing_thread_sniper_listener'
 require 'lib/user_request'
 require 'lib/auction_sniper/auction'
+require 'lib/auction_event_listeners'
 
 class AuctionSniper
   class Main
@@ -36,12 +37,22 @@ class AuctionSniper
         chat = connection.get_chat_manager.
           create_chat(auction_id(item_id, connection), nil)
         @not_to_be_gced << chat
+
+        auction_event_listeners = AuctionEventListeners.new
         auction = Auction.new(chat)
+
         chat.add_message_listener(
           AuctionMessageTranslator.new(
             connection.user,
-            AuctionSniper.new(item_id, auction, SwingThreadSniperListener.new(@snipers)))
+            auction_event_listeners
+          ))
+
+        auction_event_listeners <<(
+          AuctionSniper.new(item_id,
+                            auction,
+                            SwingThreadSniperListener.new(@snipers))
         )
+
         auction.join
       })
     end
@@ -58,5 +69,6 @@ class AuctionSniper
       end
     end
   end
+
 end
 

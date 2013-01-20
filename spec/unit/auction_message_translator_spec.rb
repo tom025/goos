@@ -1,15 +1,21 @@
 require 'lib/auction_sniper/auction_message_translator'
+require 'lib/auction_event_listeners'
 
 class AuctionSniper
   describe AuctionMessageTranslator do
     let(:chat) { double(:chat) }
     let(:sniper_id) { 'sniper' }
+    let(:auction_event_listeners) { AuctionEventListeners.new }
     let(:listener) { double(:event_listener) }
-    let(:translator) { AuctionMessageTranslator.new(sniper_id, listener) }
+    let(:translator) { AuctionMessageTranslator.new(sniper_id, auction_event_listeners) }
 
     let(:price_event_text) { "SOLVersion: 1.1; Event: PRICE; CurrentPrice: 192; " +
         "Increment: 7; Bidder: #{bidder};" }
     let(:price_event_message) { double(:message, :body => price_event_text) }
+
+    before do
+      auction_event_listeners << listener
+    end
 
     it 'notifies the when the auction closed' do
       message = double(:message, :body => "SOLVersion: 1.1; Event: CLOSE;")

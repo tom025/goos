@@ -2,20 +2,20 @@ require 'active_support/all'
 
 class AuctionSniper
   class AuctionMessageTranslator
-    def initialize(sniper_id, listener)
+    def initialize(sniper_id, listeners)
       @sniper_id = sniper_id
-      @listener = listener
+      @listeners = listeners
     end
 
     def process_message(chat, message)
       event = AuctionEvent.from(message.body)
       event_type = event.type
       if event_type == "CLOSE"
-        @listener.auction_closed
+        @listeners.notify(:auction_closed)
       elsif event_type == "PRICE"
-        @listener.current_price(event.current_price,
-                                event.increment,
-                                event.is_from(@sniper_id))
+        @listeners.notify(:current_price, event.current_price,
+                                          event.increment,
+                                          event.is_from(@sniper_id))
       end
     end
 
