@@ -1,7 +1,7 @@
 require 'lib/smack'
 require 'lib/swing'
 require 'lib/awt'
-require 'lib/auction_sniper/auction_message_translator'
+require 'lib/auction_message_translator'
 require 'lib/auction_sniper/snipers_table_model'
 require 'lib/auction_sniper/swing_thread_sniper_listener'
 require 'lib/user_request'
@@ -10,10 +10,6 @@ require 'lib/auction_event_listeners'
 
 class AuctionSniper
   class Main
-    AUCTION_RESOURCE = 'Auction'
-    ITEM_ID_AS_LOGIN = 'auction-%s'
-    AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + '@%s/' + AUCTION_RESOURCE
-
     def initialize
       @snipers = SnipersTableModel.new
       @not_to_be_gced = []
@@ -34,32 +30,16 @@ class AuctionSniper
     def add_user_request_listener_for(connection)
       @ui.add_user_request_listener(UserRequest.new { |item_id|
         @snipers.add_sniper(SniperSnapshot.joining(item_id))
-        chat = connection.get_chat_manager.
-          create_chat(auction_id(item_id, connection), nil)
-        @not_to_be_gced << chat
 
-        auction_event_listeners = AuctionEventListeners.new
-        auction = XMPPAuction.new(chat)
-
-        chat.add_message_listener(
-          AuctionMessageTranslator.new(
-            connection.user,
-            auction_event_listeners
-          ))
-
-        auction_event_listeners <<(
+        auction = XMPPAuction.new(connection, item_id)
+        @not_to_be_gced << auction
+        auction.add_auction_event_listener(
           AuctionSniper.new(item_id,
                             auction,
                             SwingThreadSniperListener.new(@snipers))
         )
-
         auction.join
       })
-    end
-
-    private
-    def auction_id(item_id, connection)
-      AUCTION_ID_FORMAT % [item_id, connection.get_service_name]
     end
 
     class WindowAdapter < AWT::WindowAdapter

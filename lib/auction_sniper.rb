@@ -1,4 +1,5 @@
 require 'lib/auction_sniper/main'
+require 'lib/auction_sniper/xmpp_auction'
 require 'lib/auction_sniper/main_window'
 require 'lib/sniper_state'
 require 'lib/sniper_snapshot'
@@ -15,7 +16,7 @@ class AuctionSniper
   def self.connection(hostname, username, password)
     connection = Smack::XMPPConnection.new(hostname)
     connection.connect
-    connection.login(username, password, Main::AUCTION_RESOURCE)
+    connection.login(username, password, XMPPAuction::AUCTION_RESOURCE)
     connection
   end
 
