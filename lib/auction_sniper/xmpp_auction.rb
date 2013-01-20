@@ -1,4 +1,4 @@
-class Auction
+class XMPPAuction
   JOIN_COMMAND_FORMAT = 'SOLVersion: 1.1; Command: Join;'
   BID_COMMAND_FORMAT = 'SOLVersion: 1.1; Command: Bid; Amount: %d'
 
