@@ -1,3 +1,6 @@
+require 'lib/auction_event_listeners'
+require 'lib/auction_message_translator'
+
 class XMPPAuction
   AUCTION_RESOURCE = 'Auction'
   ITEM_ID_AS_LOGIN = 'auction-%s'

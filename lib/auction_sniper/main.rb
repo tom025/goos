@@ -1,12 +1,10 @@
 require 'lib/smack'
 require 'lib/swing'
 require 'lib/awt'
-require 'lib/auction_message_translator'
 require 'lib/auction_sniper/snipers_table_model'
 require 'lib/auction_sniper/swing_thread_sniper_listener'
 require 'lib/user_request'
 require 'lib/auction_sniper/xmpp_auction'
-require 'lib/auction_event_listeners'
 
 class AuctionSniper
   class Main
@@ -33,6 +31,7 @@ class AuctionSniper
 
         auction = XMPPAuction.new(connection, item_id)
         @not_to_be_gced << auction
+
         auction.add_auction_event_listener(
           AuctionSniper.new(item_id,
                             auction,

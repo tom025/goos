@@ -9,7 +9,8 @@ class FakeAuctionServer
 
   include RSpec::Matchers
 
-  attr_accessor :current_chat, :message_listener, :item_id
+  attr_accessor :current_chat, :message_listener, :item_id, :connection
+  private :connection
 
   def initialize(item_id)
     @item_id = item_id
@@ -18,11 +19,11 @@ class FakeAuctionServer
   end
 
   def start_selling_item
-    @connection.connect
-    @connection.login(ITEM_ID_AS_LOGIN % @item_id,
+    connection.connect
+    connection.login(ITEM_ID_AS_LOGIN % @item_id,
                       AUCTION_PASSWORD,
                       AUCTION_RESOURCE)
-    @connection.get_chat_manager.add_chat_listener do |chat, created_locally|
+    connection.get_chat_manager.add_chat_listener do |chat, created_locally|
       @current_chat = chat
       chat.add_message_listener(@message_listener)
     end
@@ -48,7 +49,7 @@ class FakeAuctionServer
   end
 
   def stop
-    @connection.disconnect
+    connection.disconnect
   end
 
   private
