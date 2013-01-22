@@ -13,13 +13,6 @@ class AuctionSniper
     main.add_user_request_listener_for(auction_house)
   end
 
-  def self.connection(hostname, username, password)
-    connection = Smack::XMPPConnection.new(hostname)
-    connection.connect
-    connection.login(username, password, XMPPAuction::AUCTION_RESOURCE)
-    connection
-  end
-
   attr_reader :snapshot
   def initialize(item_id, auction, sniper_listener)
     @auction = auction

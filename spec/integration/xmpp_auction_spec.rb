@@ -1,12 +1,12 @@
 require 'spec_helper'
-require 'lib/auction_sniper/xmpp_auction'
+require 'lib/auction_sniper/xmpp_auction_house'
 require 'lib/jconcurrent'
 require 'lib/auction_sniper'
 
-describe XMPPAuction do
-  let(:connection) { AuctionSniper.connection('localhost', 'sniper', 'sniper') }
+describe XMPPAuctionHouse do
+  let(:auction_house) { XMPPAuctionHouse.connect('localhost', 'sniper', 'sniper') }
   let(:server) { FakeAuctionServer.new('item-54321') }
-  let(:auction) { XMPPAuction.new(connection, server.item_id) }
+  let(:auction) { auction_house.auction_for(server.item_id) }
 
   before do
     server.start_selling_item
