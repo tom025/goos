@@ -1,10 +1,8 @@
-require 'lib/smack'
-require 'lib/swing'
 require 'lib/awt'
 require 'lib/auction_sniper/snipers_table_model'
 require 'lib/auction_sniper/swing_thread_sniper_listener'
 require 'lib/user_request'
-require 'lib/auction_sniper/xmpp_auction'
+require 'lib/auction_sniper/xmpp_auction_house'
 
 class AuctionSniper
   class Main
@@ -19,17 +17,17 @@ class AuctionSniper
       end
     end
 
-    def disconnect_when_ui_closes(connection)
+    def disconnect_when_ui_closes(auction_house)
       window_adapter = WindowAdapter.new
-      window_adapter.connection = connection
+      window_adapter.auction_house = auction_house
       @ui.add_window_listener(window_adapter)
     end
 
-    def add_user_request_listener_for(connection)
+    def add_user_request_listener_for(auction_house)
       @ui.add_user_request_listener(UserRequest.new { |item_id|
         @snipers.add_sniper(SniperSnapshot.joining(item_id))
 
-        auction = XMPPAuction.new(connection, item_id)
+        auction = auction_house.auction_for(item_id)
         @not_to_be_gced << auction
 
         auction.add_auction_event_listener(
@@ -42,9 +40,9 @@ class AuctionSniper
     end
 
     class WindowAdapter < AWT::WindowAdapter
-      attr_accessor :connection
+      attr_accessor :auction_house
       def windowClosed(event)
-        connection.disconnect
+        auction_house.disconnect
       end
     end
   end

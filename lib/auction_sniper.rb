@@ -8,9 +8,9 @@ class AuctionSniper
   def self.start(hostname, sniper_id, password, *item_ids)
     main = Main.new
     main.start_user_interface
-    connection = connection(hostname, sniper_id, password)
-    main.disconnect_when_ui_closes(connection)
-    main.add_user_request_listener_for(connection)
+    auction_house = XMPPAuctionHouse.connect(hostname, sniper_id, password)
+    main.disconnect_when_ui_closes(auction_house)
+    main.add_user_request_listener_for(auction_house)
   end
 
   def self.connection(hostname, username, password)
