@@ -1,17 +1,22 @@
 require 'lib/swing'
-require 'lib/auction_sniper/main_window'
 require 'lib/sniper_state'
 require 'lib/sniper_snapshot'
 require 'lib/column'
 
 class AuctionSniper
   class SnipersTableModel < Swing::AbstractTableModel
+    STATUS_JOINING = 'joining'
+    STATUS_BIDDING = 'bidding'
+    STATUS_WINNING = 'winning'
+    STATUS_LOST = 'lost'
+    STATUS_WON = 'won'
+
     STATUS_TEXT = [
-      MainWindow::STATUS_JOINING,
-      MainWindow::STATUS_BIDDING,
-      MainWindow::STATUS_WINNING,
-      MainWindow::STATUS_LOST,
-      MainWindow::STATUS_WON
+      STATUS_JOINING,
+      STATUS_BIDDING,
+      STATUS_WINNING,
+      STATUS_LOST,
+      STATUS_WON
     ]
 
     attr_reader :snapshots
@@ -20,7 +25,12 @@ class AuctionSniper
       @snapshots = []
     end
 
-    def add_sniper(snapshot)
+    def sniper_added(sniper)
+      add_sniper_snapshot(sniper.snapshot)
+      sniper.add_sniper_listener(SwingThreadSniperListener.new(self))
+    end
+
+    def add_sniper_snapshot(snapshot)
       snapshots << snapshot
       row = row_count
       fire_table_rows_inserted(row, row)

@@ -1,6 +1,7 @@
 require 'lib/swing'
 require 'lib/awt'
 require 'lib/user_requests'
+require 'lib/auction_sniper/snipers_table_model'
 
 class AuctionSniper
   class MainWindow < Swing::JFrame
@@ -15,11 +16,11 @@ class AuctionSniper
     STATUS_LOST = 'lost'
     STATUS_WON = 'won'
 
-    def initialize(snipers)
+    def initialize(portfolio)
       super("Auction Sniper")
       @user_requests = UserRequests.new
       set_name(MAIN_WINDOW_NAME)
-      fill_content_pane(make_snipers_table(snipers), make_controls)
+      fill_content_pane(make_snipers_table(portfolio), make_controls)
       pack
       set_default_close_operation(Swing::JFrame::EXIT_ON_CLOSE)
       set_visible(true)
@@ -36,8 +37,10 @@ class AuctionSniper
       content_pane.add(Swing::JScrollPane.new(snipers_table), AWT::BorderLayout::CENTER)
     end
 
-    def make_snipers_table(snipers)
-      snipers_table = Swing::JTable.new(snipers)
+    def make_snipers_table(portfolio)
+      model = SnipersTableModel.new
+      portfolio.add_portfolio_listener(model)
+      snipers_table = Swing::JTable.new(model)
       snipers_table.name = SNIPER_TABLE_NAME
       snipers_table
     end

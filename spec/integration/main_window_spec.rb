@@ -1,12 +1,12 @@
 require 'spec_helper'
-require 'lib/auction_sniper/snipers_table_model'
+require 'lib/sniper_portfolio'
 require 'lib/auction_sniper/main_window'
 require 'lib/user_request'
 
 class AuctionSniper
   describe MainWindow do
-    let(:table_model) { SnipersTableModel.new }
-    let(:main_window) { MainWindow.new(table_model) }
+    let(:portfolio) { SniperPortfolio.new }
+    let(:main_window) { MainWindow.new(portfolio) }
     let(:driver) { ApplicationRunner::AuctionSniperDriver.with_timeout(100) }
 
     it 'sends join requests to the application' do

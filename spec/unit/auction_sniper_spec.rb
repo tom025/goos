@@ -4,8 +4,10 @@ describe AuctionSniper do
   let(:item_id) { 'item-54321' }
   let(:sniper_listener) { double(:sniper_listener, :sniper_state_changed => nil,
                                                    :sniper_lost => nil) }
-  let(:sniper) { AuctionSniper.new(item_id, auction, sniper_listener) }
+  let(:sniper) { AuctionSniper.new(item_id, auction) }
   let(:auction) { double(:auction).as_null_object }
+
+  before { sniper.add_sniper_listener(sniper_listener) }
 
   it 'reports loss when auction closes imediately' do
     lost_snapshot = SniperSnapshot.new(item_id, '-', '-', SniperState::LOST)

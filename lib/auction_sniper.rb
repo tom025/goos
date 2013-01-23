@@ -3,6 +3,7 @@ require 'lib/auction_sniper/xmpp_auction'
 require 'lib/auction_sniper/main_window'
 require 'lib/sniper_state'
 require 'lib/sniper_snapshot'
+require 'lib/sniper_listeners'
 
 class AuctionSniper
   def self.start(hostname, sniper_id, password, *item_ids)
@@ -14,10 +15,14 @@ class AuctionSniper
   end
 
   attr_reader :snapshot
-  def initialize(item_id, auction, sniper_listener)
+  def initialize(item_id, auction)
     @auction = auction
     @snapshot = SniperSnapshot.joining(item_id)
-    @sniper_listener = sniper_listener
+    @sniper_listeners = SniperListeners.new
+  end
+
+  def add_sniper_listener(sniper_listener)
+    @sniper_listeners << sniper_listener
   end
 
   def auction_closed
@@ -39,7 +44,7 @@ class AuctionSniper
 
   private
   def notify_change
-    @sniper_listener.sniper_state_changed(snapshot)
+    @sniper_listeners.notify(:sniper_state_changed, snapshot)
   end
 end
 

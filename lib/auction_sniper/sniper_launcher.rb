@@ -4,26 +4,20 @@ require 'lib/auction_sniper/swing_thread_sniper_listener'
 
 class AuctionSniper
   class SniperLauncher
-    attr_reader :auction_house, :snipers
-    private :auction_house, :snipers
+    attr_reader :auction_house, :collector
+    private :auction_house, :collector
 
-    def initialize(auction_house, snipers)
+    def initialize(auction_house, collector)
       @auction_house = auction_house
-      @snipers = snipers
-      @not_to_be_gced = []
+      @collector = collector
     end
 
     def join_auction(item_id)
-      snipers.add_sniper(SniperSnapshot.joining(item_id))
-
       auction = auction_house.auction_for(item_id)
-      @not_to_be_gced << auction
+      sniper = AuctionSniper.new(item_id, auction)
 
-      auction.add_auction_event_listener(
-        AuctionSniper.new(item_id,
-                          auction,
-                          SwingThreadSniperListener.new(snipers))
-      )
+      auction.add_auction_event_listener(sniper)
+      collector.add_sniper(sniper)
       auction.join
     end
   end

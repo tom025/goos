@@ -1,20 +1,20 @@
 require 'lib/awt'
-require 'lib/auction_sniper/snipers_table_model'
-require 'lib/auction_sniper/swing_thread_sniper_listener'
-require 'lib/user_request'
-require 'lib/auction_sniper/xmpp_auction_house'
+require 'lib/swing'
+require 'lib/auction_sniper/sniper_launcher'
+require 'lib/sniper_portfolio'
+require 'lib/auction_sniper/main_window'
 
 class AuctionSniper
   class Main
-    attr_reader :snipers, :ui
-    private :snipers, :ui
+    attr_reader :portfolio, :ui
+    private :portfolio, :ui
     def initialize
-      @snipers = SnipersTableModel.new
+      @portfolio = SniperPortfolio.new
     end
 
     def start_user_interface
       Swing::SwingUtilities.invoke_and_wait do
-        @ui = MainWindow.new(snipers)
+        @ui = MainWindow.new(portfolio)
       end
     end
 
@@ -26,7 +26,7 @@ class AuctionSniper
 
     def add_user_request_listener_for(auction_house)
       ui.add_user_request_listener(
-        SniperLauncher.new(auction_house, snipers)
+        SniperLauncher.new(auction_house, portfolio)
       )
     end
 
