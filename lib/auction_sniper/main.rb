@@ -6,37 +6,28 @@ require 'lib/auction_sniper/xmpp_auction_house'
 
 class AuctionSniper
   class Main
+    attr_reader :snipers, :ui
+    private :snipers, :ui
     def initialize
       @snipers = SnipersTableModel.new
-      @not_to_be_gced = []
     end
 
     def start_user_interface
       Swing::SwingUtilities.invoke_and_wait do
-        @ui = MainWindow.new(@snipers)
+        @ui = MainWindow.new(snipers)
       end
     end
 
     def disconnect_when_ui_closes(auction_house)
       window_adapter = WindowAdapter.new
       window_adapter.auction_house = auction_house
-      @ui.add_window_listener(window_adapter)
+      ui.add_window_listener(window_adapter)
     end
 
     def add_user_request_listener_for(auction_house)
-      @ui.add_user_request_listener(UserRequest.new { |item_id|
-        @snipers.add_sniper(SniperSnapshot.joining(item_id))
-
-        auction = auction_house.auction_for(item_id)
-        @not_to_be_gced << auction
-
-        auction.add_auction_event_listener(
-          AuctionSniper.new(item_id,
-                            auction,
-                            SwingThreadSniperListener.new(@snipers))
-        )
-        auction.join
-      })
+      ui.add_user_request_listener(
+        SniperLauncher.new(auction_house, snipers)
+      )
     end
 
     class WindowAdapter < AWT::WindowAdapter
